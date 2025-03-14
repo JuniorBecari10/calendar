@@ -14,7 +14,12 @@ void print_current_month() {
 }
 
 void print_year(int year) {
+    printf("     Year of %d\n\n", year);
 
+    for (int m = 1; m <= 12; m++) {
+        print_calendar(year, m);
+        printf("\n");
+    }
 }
 
 void print_month(int month, int year) {
@@ -22,9 +27,12 @@ void print_month(int month, int year) {
 }
 
 void print_now() {
+    const char *days_of_the_week[] = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
-    printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    
+    printf("%s, %d/%02d/%02d %02d:%02d:%02d\n", days_of_the_week[tm.tm_wday], tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 }
 
 void help() {
@@ -32,7 +40,7 @@ void help() {
 }
 
 void version() {
-    printf("%s\n", VERSION);
+    printf("Calendar version %s\n", VERSION);
 }
 
 void watch() {

@@ -14,13 +14,13 @@ int main(int argc, char *argv[]) {
             // now, help, version, watch, default: print year
             char *cmd = argv[1];
 
-            if (strcasecmp(cmd, "now"))
+            if (strcasecmp(cmd, "now") == 0)
                 print_now();
-            else if (strcasecmp(cmd, "help"))
+            else if (strcasecmp(cmd, "help") == 0)
                 help();
-            else if (strcasecmp(cmd, "version"))
+            else if (strcasecmp(cmd, "version") == 0)
                 version();
-            else if (strcasecmp(cmd, "watch"))
+            else if (strcasecmp(cmd, "watch") == 0)
                 watch();
             else {
                 int32_t year;
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
             uint8_t month;
             uint32_t year;
 
-            if (sscanf(argv[1], "%hhu", &month) != 1 && sscanf(argv[2], "%d", &year) != 1) {
+            if (sscanf(argv[1], "%hhu", &month) != 1 || sscanf(argv[2], "%d", &year) != 1) {
                 fprintf(stderr, "Incorrect formatting for month and year.\n");
                 return 1;
             }
