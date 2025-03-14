@@ -1,3 +1,3 @@
 all:
-	gcc *.c -o calendar -O1 -Wall -Wextra -Werror
-	./calendar
+	gcc *.c lib/*.c -o calendar -O1 -Wall -Wextra
+
