@@ -32,7 +32,7 @@ void print_now() {
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
     
-    printf("%s, %d/%02d/%02d %02d:%02d:%02d\n", days_of_the_week[tm.tm_wday], tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    printf("%s, %d/%02d/%02d %02d:%02d:%02d.\n", days_of_the_week[tm.tm_wday], tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 }
 
 void help() {
@@ -40,7 +40,7 @@ void help() {
 }
 
 void version() {
-    printf("Calendar version %s\n", VERSION);
+    printf("Calendar version %s.\n", VERSION);
 }
 
 void watch() {
