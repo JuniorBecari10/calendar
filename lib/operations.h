@@ -3,6 +3,11 @@
 
 #include <inttypes.h>
 
+typedef struct {
+    uint8_t hours;
+    uint8_t minutes;
+} Hour;
+
 typedef enum {
     ALARM_DAILY,
     ALARM_WEEKLY,
@@ -11,7 +16,31 @@ typedef enum {
 } AlarmTypeId;
 
 typedef struct {
+    AlarmTypeId id;
+    
+    union {
+        struct {
+            Hour hour;            
+        } daily;
 
+        struct {
+            uint8_t week_day;
+            Hour hour;
+        } weekly;
+
+        struct {
+            uint8_t month_day;
+            Hour hour;
+        } monthly;
+
+        struct {
+            uint8_t month_day;
+            uint8_t month;
+            uint32_t year;
+
+            Hour hour;
+        } unique;
+    } alarm;
 } AlarmType;
 
 typedef uint64_t Id;

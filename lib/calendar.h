@@ -1,7 +1,9 @@
 #ifndef CALENDAR_H
 #define CALENDAR_H
 
-void print_calendar(int y, int m);
+#include <inttypes.h>
 
-#endif // !CALENDAR_H
+void print_calendar(int32_t year, int32_t month);
+
+#endif
 
