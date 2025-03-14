@@ -27,7 +27,7 @@ void print_calendar(int y, int m) {
     for (int i = week_of_top_day, day = 1; day <= num_days_of_months[m]; i++, day++) {
         printf("%2d ", day);
 
-        if (i % 7 == 6)
+        if (i % 7 == 6 && day < num_days_of_months[m])
             printf("\n");
     }
 
