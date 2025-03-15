@@ -44,22 +44,22 @@ typedef struct {
 } AlarmType;
 
 typedef uint64_t Id;
-typedef AlarmTypeId Filter;
+typedef AlarmTypeId AlarmFilter;
 
 /* 
  * Args:
  *
- * 0 -> show current month
- * 1 (year) -> show entire year
- * 2 (month year) -> show specified month
+ * 0 -> show current month ok
+ * 1 (year) -> show entire year ok
+ * 2 (month year) -> show specified month ok
  *
- * now -> show current date and time
- * help -> show help text
- * version -> show version and details
- * watch -> watch mode, where the app can work and ring your alarms
+ * now -> show current date and time ok
+ * help -> show help text ok*
+ * version -> show version and details ok
+ * watch -> watch mode, where the app can work and ring your alarms ok*
  *
- * import <file> -> set the global '.calendar' file to the specified one if it's valid
- * export <file> -> export the current '.calendar' file to the specified file
+ * import <file> -> set the global '.calendar' file to the specified one if it's valid ok*
+ * export <file> -> export the current '.calendar' file to the specified file ok*
  * 
  * alarm:
  *     add <description> (daily <hh:mm> | weekly <week-day> <hh:mm>
@@ -88,7 +88,7 @@ void export_file(char *file);
 void alarm_add(char *description, AlarmType type);
 void alarm_edit(Id id, char *description, AlarmType type);
 
-void alarm_list(Filter filter);
+void alarm_list(AlarmFilter filter);
 void alarm_remove(Id id);
 
 #endif

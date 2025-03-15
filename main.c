@@ -18,26 +18,26 @@ int main(int argc, char *argv[]) {
         
         case 2: {
             // now, help, version, watch, default: print year
-            //
-            char *cmd = argv[1];
 
-            if (strcasecmp(cmd, "now") == 0)
+            char *option = argv[1];
+
+            if (strcasecmp(option, "now") == 0)
                 print_now();
-            else if (strcasecmp(cmd, "help") == 0)
+            else if (strcasecmp(option, "help") == 0)
                 help();
-            else if (strcasecmp(cmd, "version") == 0)
+            else if (strcasecmp(option, "version") == 0)
                 version();
-            else if (strcasecmp(cmd, "watch") == 0)
+            else if (strcasecmp(option, "watch") == 0)
                 watch();
             else {
                 int32_t year;
 
-                if (sscanf(cmd, "%d", &year) != 1)
+                if (sscanf(option, "%d", &year) != 1)
                     ERROR("Invalid year/option.");
 
                 if (year <= 0)
                     ERROR("Year must be greater than 0.");
-            
+ 
                 print_year(year);
             }
 
@@ -52,10 +52,10 @@ int main(int argc, char *argv[]) {
             int32_t year;
 
             if (sscanf(argv[1], "%hhd", &month) != 1)
-                ERROR("Invalid month.");
+                ERROR("Invalid month/option.");
 
             if (sscanf(argv[2], "%d", &year) != 1)
-                ERROR("Invalid year.");
+                ERROR("Invalid year/option.");
 
             if (month < 0 || month > 12)
                 ERROR("Month must be between 1 and 12.");
@@ -66,8 +66,32 @@ int main(int argc, char *argv[]) {
             print_month(month, year);
             return 0;
         }
-    }
 
-    return 0;
+        default: {
+            if (strcasecmp(argv[1], "alarm") == 0) {
+                char *option = argv[2];
+
+                if (strcasecmp(option, "add") == 0) {
+
+                }
+ 
+                else if (strcasecmp(option, "edit") == 0) {
+
+                }
+
+                else if (strcasecmp(option, "list") == 0) {
+
+                }
+
+                else if (strcasecmp(option, "remove") == 0) {
+
+                }
+
+                return 0;
+            }
+
+            else ERROR("Invalid option.");
+        }
+    }
 }
 

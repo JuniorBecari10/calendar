@@ -36,7 +36,7 @@ void print_now() {
 }
 
 void help() {
-
+    fprintf(stderr, "Not implemented yet.\n");
 }
 
 void version() {
@@ -44,30 +44,30 @@ void version() {
 }
 
 void watch() {
-
+    fprintf(stderr, "Not implemented yet.\n");
 }
 
 void import_file(char *file) {
-
+    fprintf(stderr, "Not implemented yet.\n");
 }
 
 void export_file(char *file) {
-
+    fprintf(stderr, "Not implemented yet.\n");
 }
 
 void alarm_add(char *description, AlarmType type) {
-
+    fprintf(stderr, "Not implemented yet.\n");
 }
 
 void alarm_edit(Id id, char *description, AlarmType type) {
-
+    fprintf(stderr, "Not implemented yet.\n");
 }
 
-void alarm_list(Filter filter) {
-
+void alarm_list(AlarmFilter filter) {
+    fprintf(stderr, "Not implemented yet.\n");
 }
 
 void alarm_remove(Id id) {
-
+    fprintf(stderr, "Not implemented yet.\n");
 }
 
