@@ -3,6 +3,8 @@
 
 #include "operations.h"
 #include "calendar.h"
+#include "file.h"
+#include "list.h"
 
 const char *VERSION = "v0.1 Alpha";
 
@@ -56,6 +58,9 @@ void export_file(char *file) {
 }
 
 void alarm_add(Alarm alarm) {
+    AlarmList list;
+    if (!parse_file(&list)) return;
+
     fprintf(stderr, "Not implemented yet.\n");
 }
 

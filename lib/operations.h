@@ -34,9 +34,9 @@ typedef struct {
         } monthly;
 
         struct {
-            uint8_t month_day;
-            uint8_t month;
             uint32_t year;
+            uint8_t month;
+            uint8_t month_day;
 
             Hour hour;
         } unique;
