@@ -2,12 +2,7 @@
 #include <strings.h>
 
 #include "lib/operations.h"
-
-#define ERROR(message)                 \
-    do {                               \
-        fprintf(stderr, message "\n"); \
-        return 1;                      \
-    } while (0)
+#include "lib/util.h"
 
 int main(int argc, char *argv[]) {
     switch (argc) {
@@ -18,7 +13,6 @@ int main(int argc, char *argv[]) {
         
         case 2: {
             // now, help, version, watch, default: print year
-
             char *option = argv[1];
 
             if (strcasecmp(option, "now") == 0)

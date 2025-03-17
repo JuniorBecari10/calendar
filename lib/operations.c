@@ -55,11 +55,11 @@ void export_file(char *file) {
     fprintf(stderr, "Not implemented yet.\n");
 }
 
-void alarm_add(char *description, AlarmType type) {
+void alarm_add(Alarm alarm) {
     fprintf(stderr, "Not implemented yet.\n");
 }
 
-void alarm_edit(Id id, char *description, AlarmType type) {
+void alarm_edit(Id id, Alarm alarm) {
     fprintf(stderr, "Not implemented yet.\n");
 }
 

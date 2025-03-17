@@ -43,6 +43,11 @@ typedef struct {
     } alarm;
 } AlarmType;
 
+typedef struct {
+    char *description;
+    AlarmType type;
+} Alarm;
+
 typedef uint64_t Id;
 typedef AlarmTypeId AlarmFilter;
 
@@ -85,8 +90,8 @@ void watch();
 void import_file(char *file);
 void export_file(char *file);
 
-void alarm_add(char *description, AlarmType type);
-void alarm_edit(Id id, char *description, AlarmType type);
+void alarm_add(Alarm alarm);
+void alarm_edit(Id id, Alarm alarm);
 
 void alarm_list(AlarmFilter filter);
 void alarm_remove(Id id);
