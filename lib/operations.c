@@ -62,6 +62,7 @@ void alarm_add(Alarm alarm) {
     if (!parse_file(&list)) return;
 
     fprintf(stderr, "Not implemented yet.\n");
+    free_alarm_list(&list);
 }
 
 void alarm_edit(Id id, Alarm alarm) {

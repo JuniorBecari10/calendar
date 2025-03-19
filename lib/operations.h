@@ -12,6 +12,7 @@ typedef enum {
     ALARM_DAILY,
     ALARM_WEEKLY,
     ALARM_MONTHLY,
+    ALARM_YEARLY,
     ALARM_UNIQUE,
 } AlarmTypeId;
 
@@ -32,6 +33,13 @@ typedef struct {
             uint8_t month_day;
             Hour hour;
         } monthly;
+
+        struct {
+            uint8_t month;
+            uint8_t month_day;
+
+            Hour hour;
+        } yearly;
 
         struct {
             uint32_t year;
@@ -68,7 +76,7 @@ typedef AlarmTypeId AlarmFilter;
  * 
  * alarm:
  *     add <description> (daily <hh:mm> | weekly <week-day> <hh:mm>
- *         | monthly <day*> <hh:mm> | unique <day> <month> <year> <hh:mm>) -> add an alarm for the specified interval
+ *         | monthly <day*> <hh:mm> | yearly <day> <month> <hh:mm> | unique <day> <month> <year> <hh:mm>) -> add an alarm for the specified interval
  *     *: that is available on all months
  *
  *     edit <id> /same as 'add'/

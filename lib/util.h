@@ -1,6 +1,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#define SEPARATOR "|"
+#define SEPARATOR_CHAR '|'
+
 #define ERROR(message)                 \
     do {                               \
         fprintf(stderr, message "\n"); \

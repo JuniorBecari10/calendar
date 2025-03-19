@@ -69,6 +69,7 @@ void write_to_file(AlarmList list) {
  *     daily:   hour|minute
  *     weekly:  week_day|hour|minute
  *     monthly: month_day|hour|minute
+ *     yearly:  month_day|month|hour|minute
  *     unique:  year|month|month_day|hour|minute
  * 
  * Descriptions must not have the separator character.
@@ -82,11 +83,15 @@ static bool parse_line(char *line, Alarm *out_alarm) {
     char *token;
     while ((token = strtok(NULL, "|")) != NULL) {
         if (count == 0) {
-            switch (atoi(token)) {
-                case 0: id = ALARM_DAILY; break;
-                case 1: id = ALARM_WEEKLY; break;
+            uint8_t parsed_id;
+            if (sscanf(token, "%hhd", &parsed_id) != 1)
+                return false;
+
+            switch (parsed_id) {
+                case 0: id = ALARM_DAILY;   break;
+                case 1: id = ALARM_WEEKLY;  break;
                 case 2: id = ALARM_MONTHLY; break;
-                case 3: id = ALARM_UNIQUE; break;
+                case 3: id = ALARM_UNIQUE;  break;
             }
         }
 
@@ -95,10 +100,10 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                 case ALARM_DAILY: {
                     uint8_t hours, minutes;
 
-                    if (count == 1)
-                        hours = atoi(token);
-                    else if (count == 2)
-                        minutes = atoi(token);
+                    if (count == 1 && sscanf(token, "%hhd", &hours) != 1)
+                        return false;
+                    else if (count == 2 && sscanf(token, "%hhd", &minutes) != 1)
+                        return false;
 
                     *out_alarm = (Alarm) {
                         .description = desc,
@@ -121,6 +126,10 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                 }
 
                 case ALARM_MONTHLY: {
+
+                }
+
+                case ALARM_YEARLY: {
 
                 }
 
