@@ -1,6 +1,8 @@
 #include "list.h"
+#include "operations.h"
 #include "util.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -74,9 +76,63 @@ void write_to_file(AlarmList list) {
 static bool parse_line(char *line, Alarm *out_alarm) {
     char *desc = strtok(line, "|");
 
+    AlarmTypeId id = ALARM_DAILY;
+    uint32_t count = 0;
+
     char *token;
     while ((token = strtok(NULL, "|")) != NULL) {
-        
+        if (count == 0) {
+            switch (atoi(token)) {
+                case 0: id = ALARM_DAILY; break;
+                case 1: id = ALARM_WEEKLY; break;
+                case 2: id = ALARM_MONTHLY; break;
+                case 3: id = ALARM_UNIQUE; break;
+            }
+        }
+
+        else {
+            switch (id) {
+                case ALARM_DAILY: {
+                    uint8_t hours, minutes;
+
+                    if (count == 1)
+                        hours = atoi(token);
+                    else if (count == 2)
+                        minutes = atoi(token);
+
+                    *out_alarm = (Alarm) {
+                        .description = desc,
+                        .type = (AlarmType) {
+                            .id = id,
+                            .alarm.daily = {
+                                .hour = (Hour) {
+                                    .hours = hours,
+                                    .minutes = minutes,
+                                }
+                            }
+                        }
+                    };
+
+                    return true;
+                }
+
+                case ALARM_WEEKLY: {
+
+                }
+
+                case ALARM_MONTHLY: {
+
+                }
+
+                case ALARM_UNIQUE: {
+
+                }
+            }
+        }
+
+        count++;
     }
+
+    return true;
 }
 
