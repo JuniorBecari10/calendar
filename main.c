@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
@@ -17,7 +18,6 @@ int main(int argc, char *argv[]) {
             char *option = argv[1];
 
             if (strcasecmp(option, "now") == 0)
-
                 print_now();
             else if (strcasecmp(option, "help") == 0)
                 help();
@@ -89,7 +89,6 @@ int main(int argc, char *argv[]) {
                         char *hour_str = argv[5];
                         uint8_t hours, minutes;
 
-                        // TODO: check for errors
                         if (sscanf(hour_str, "%hhd:%hhd", &hours, &minutes) != 2)
                             ERROR("Please specify the hour correctly: 'hh:mm'.");
 
@@ -115,7 +114,44 @@ int main(int argc, char *argv[]) {
                     }
 
                     else if (strcasecmp(option, "weekly") == 0) {
+                        char *week_days[] = { "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday" };
+                        const size_t length = 7;
 
+                        if (argc < 7)
+                            ERROR("Please specify the day of the week and the hour.");
+
+                        char *week_day_str = argv[5];
+                        char *hour_str = argv[6];
+
+                        int64_t week_day;
+                        if ((week_day = get_index_str(week_days, length, week_day_str)) == SIZE_MAX)
+                            ERROR("Please specify a valid day of the week.");
+
+                        uint8_t hours, minutes;
+
+                        if (sscanf(hour_str, "%hhd:%hhd", &hours, &minutes) != 2)
+                            ERROR("Please specify the hour correctly: 'hh:mm'.");
+
+                        Hour hour = (Hour) {
+                            .hours = hours,
+                            .minutes = minutes,
+                        };
+
+                        if (!is_valid_hour(hour))
+                            ERROR("Please specify a valid hour.");
+
+                        Alarm alarm = (Alarm) {
+                            .description = description,
+                            .type = (AlarmType) {
+                                .id = ALARM_WEEKLY,
+                                .alarm.weekly = {
+                                    .week_day = week_day,
+                                    .hour = hour,
+                                },
+                            },
+                        };
+
+                        alarm_add(alarm);
                     }
 
                     else if (strcasecmp(option, "monthly") == 0) {
