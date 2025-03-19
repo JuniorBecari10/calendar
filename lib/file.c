@@ -38,7 +38,7 @@ bool parse_file(AlarmList *out_list) {
         Alarm alarm;
         if (!parse_line(line, &alarm)) {
             // error during line parse. the program may not function correctly.
-            PERROR("Parse error: could not parse file.");
+            PERROR("Parse error: could not parse alarms file.");
             free_alarm_list(out_list);
 
             return false;
@@ -75,13 +75,16 @@ void write_to_file(AlarmList list) {
  * Descriptions must not have the separator character.
  */
 static bool parse_line(char *line, Alarm *out_alarm) {
-    char *desc = strtok(line, "|");
+    char *desc = strtok(line, SEPARATOR);
+
+    if (strchr(desc, SEPARATOR_CHAR) != NULL)
+        return false;
 
     AlarmTypeId id = ALARM_DAILY;
     uint32_t count = 0;
 
     char *token;
-    while ((token = strtok(NULL, "|")) != NULL) {
+    while ((token = strtok(NULL, SEPARATOR)) != NULL) {
         if (count == 0) {
             uint8_t parsed_id;
             if (sscanf(token, "%hhd", &parsed_id) != 1)

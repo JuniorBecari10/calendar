@@ -10,7 +10,7 @@
         return 1;                      \
     } while (0)
 
-#define PERROR(message)                 \
+#define PERROR(message)                \
     do {                               \
         fprintf(stderr, message "\n"); \
     } while (0)
