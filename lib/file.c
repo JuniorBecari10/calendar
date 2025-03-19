@@ -77,9 +77,6 @@ void write_to_file(AlarmList list) {
 static bool parse_line(char *line, Alarm *out_alarm) {
     char *desc = strtok(line, SEPARATOR);
 
-    if (strchr(desc, SEPARATOR_CHAR) != NULL)
-        return false;
-
     AlarmTypeId id = ALARM_DAILY;
     uint32_t count = 0;
 
@@ -125,7 +122,30 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                 }
 
                 case ALARM_WEEKLY: {
+                    uint8_t week_day, hours, minutes;
 
+                    if (count == 1 && sscanf(token, "%hhd", &week_day) != 1)
+                        return false;
+                    else if (count == 2 && sscanf(token, "%hhd", &hours) != 1)
+                        return false;
+                    else if (count == 3 && sscanf(token, "%hhd", &minutes) != 1)
+                        return false;
+
+                    *out_alarm = (Alarm) {
+                        .description = desc,
+                        .type = (AlarmType) {
+                            .id = id,
+                            .alarm.weekly = {
+                                .week_day = week_day,
+                                .hour = (Hour) {
+                                    .hours = hours,
+                                    .minutes = minutes,
+                                },
+                            }
+                        }
+                    };
+
+                    return true;
                 }
 
                 case ALARM_MONTHLY: {
