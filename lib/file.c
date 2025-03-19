@@ -70,7 +70,7 @@ void write_to_file(AlarmList list) {
  *     weekly:  week_day|hour|minute
  *     monthly: month_day|hour|minute
  *     yearly:  month_day|month|hour|minute
- *     unique:  year|month|month_day|hour|minute
+ *     unique:  month_day|month|year|hour|minute
  * 
  * Descriptions must not have the separator character.
  */
@@ -149,15 +149,87 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                 }
 
                 case ALARM_MONTHLY: {
+                    uint8_t month_day, hours, minutes;
+                    
+                    if (count == 1 && sscanf(token, "%hhd", &month_day) != 1)
+                        return false;
+                    else if (count == 2 && sscanf(token, "%hhd", &hours) != 1)
+                        return false;
+                    else if (count == 3 && sscanf(token, "%hhd", &minutes) != 1)
+                        return false;
 
+                    *out_alarm = (Alarm) {
+                        .description = desc,
+                        .type = (AlarmType) {
+                            .id = id,
+                            .alarm.monthly = {
+                                .month_day = month_day,
+                                .hour = (Hour) {
+                                    .hours = hours,
+                                    .minutes = minutes,
+                                },
+                            }
+                        }
+                    };
                 }
 
                 case ALARM_YEARLY: {
+                    uint8_t month_day, month, hours, minutes;
+                    
+                    if (count == 1 && sscanf(token, "%hhd", &month_day) != 1)
+                        return false;
+                    else if (count == 2 && sscanf(token, "%hhd", &month) != 1)
+                        return false;
+                    else if (count == 3 && sscanf(token, "%hhd", &hours) != 1)
+                        return false;
+                    else if (count == 4 && sscanf(token, "%hhd", &minutes) != 1)
+                        return false;
 
+                    *out_alarm = (Alarm) {
+                        .description = desc,
+                        .type = (AlarmType) {
+                            .id = id,
+                            .alarm.yearly = {
+                                .month_day = month_day,
+                                .month = month,
+                                .hour = (Hour) {
+                                    .hours = hours,
+                                    .minutes = minutes,
+                                },
+                            }
+                        }
+                    };
                 }
 
                 case ALARM_UNIQUE: {
+                    uint8_t month_day, month, hours, minutes;
+                    uint32_t year;
+                    
+                    if (count == 1 && sscanf(token, "%hhd", &month_day) != 1)
+                        return false;
+                    else if (count == 2 && sscanf(token, "%hhd", &month) != 1)
+                        return false;
+                    else if (count == 3 && sscanf(token, "%d", &year) != 1)
+                        return false;
+                    else if (count == 4 && sscanf(token, "%hhd", &hours) != 1)
+                        return false;
+                    else if (count == 5 && sscanf(token, "%hhd", &minutes) != 1)
+                        return false;
 
+                    *out_alarm = (Alarm) {
+                        .description = desc,
+                        .type = (AlarmType) {
+                            .id = id,
+                            .alarm.yearly = {
+                                .month_day = month_day,
+                                .month = month,
+                                .hour = (Hour) {
+                                    .hours = hours,
+                                    .minutes = minutes,
+                                },
+                            }
+                        }
+                    };
                 }
             }
         }

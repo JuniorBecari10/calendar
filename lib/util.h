@@ -1,6 +1,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include "operations.h"
+#include <stdbool.h>
+
 #define SEPARATOR "|"
 #define SEPARATOR_CHAR '|'
 
@@ -14,5 +17,7 @@
     do {                               \
         fprintf(stderr, message "\n"); \
     } while (0)
+
+bool is_valid_hour(Hour hour);
 
 #endif

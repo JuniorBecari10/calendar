@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
                 if (strcasecmp(option, "add") == 0) {
                     // desc <daily ... | weekly ... | monthly ... | yearly | unique ...>
 
-                    if (argc < 4)
+                    if (argc < 5)
                         ERROR("Description and options must be specified.");
 
                     char *description = argv[3];
@@ -83,12 +83,13 @@ int main(int argc, char *argv[]) {
                     if (strcasecmp(option, "daily") == 0) {
                         // <hh:mm>
                         
-                        if (argc < 5)
+                        if (argc < 6)
                             ERROR("Please specify the hour.");
 
                         char *hour_str = argv[5];
                         uint8_t hours, minutes;
 
+                        // TODO: check for errors
                         if (sscanf(hour_str, "%hhd:%hhd", &hours, &minutes) != 2)
                             ERROR("Please specify the hour correctly: 'hh:mm'.");
 
@@ -96,6 +97,9 @@ int main(int argc, char *argv[]) {
                             .hours = hours,
                             .minutes = minutes,
                         };
+
+                        if (!is_valid_hour(hour))
+                            ERROR("Please specify a valid hour.");
 
                         Alarm alarm = (Alarm) {
                             .description = description,
