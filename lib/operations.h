@@ -1,6 +1,7 @@
 #ifndef OPERATIONS_H
 #define OPERATIONS_H
 
+#include <stdbool.h>
 #include <inttypes.h>
 
 typedef struct {
@@ -32,6 +33,9 @@ typedef struct {
         struct {
             uint8_t month_day;
             Hour hour;
+            bool clamp; // clamps the day if the current month doesn't have enough days
+                        // (ex.: month_day = 31. February doesn't have 31 days, so the alarm will ring on the last day, which
+                        // can be either 28 or 29). default is false.
         } monthly;
 
         struct {

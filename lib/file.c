@@ -171,6 +171,8 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                             }
                         }
                     };
+
+                    return true;
                 }
 
                 case ALARM_YEARLY: {
@@ -199,6 +201,8 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                             }
                         }
                     };
+
+                    return true;
                 }
 
                 case ALARM_UNIQUE: {
@@ -230,6 +234,8 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                             }
                         }
                     };
+
+                    return true;
                 }
             }
         }

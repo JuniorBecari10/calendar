@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
                         char *week_day_str = argv[5];
                         char *hour_str = argv[6];
 
-                        int64_t week_day;
+                        size_t week_day;
                         if ((week_day = get_index_str(week_days, length, week_day_str)) == SIZE_MAX)
                             ERROR("Please specify a valid day of the week.");
 
@@ -155,7 +155,57 @@ int main(int argc, char *argv[]) {
                     }
 
                     else if (strcasecmp(option, "monthly") == 0) {
+                        if (argc < 7)
+                            ERROR("Please specify the day of the month and the hour.");
 
+                        char *month_day_str = argv[5];
+                        char *hour_str = argv[6];
+
+                        uint8_t month_day, hours, minutes;
+                        bool clamp = false; // default
+                        
+                        if (argc >= 8) {
+                            char *check_clamp = argv[7];
+
+                            if (strcasecmp(check_clamp, "--clamp") == 0)
+                                clamp = true;
+                        }
+                        
+                        if (sscanf(month_day_str, "%hhd", &month_day) != 1)
+                            ERROR("Please specify a valid day of the month.");
+                        
+                        if (sscanf(hour_str, "%hhd:%hhd", &hours, &minutes) != 2)
+                            ERROR("Please specify the hour correctly: 'hh:mm'.");
+                        
+                        Hour hour = (Hour) {
+                            .hours = hours,
+                            .minutes = minutes,
+                        };
+
+                        if (!is_valid_hour(hour))
+                            ERROR("Please specify a valid hour.");
+
+                        if (month_day > 28) {
+                            if (!clamp)
+                                ERROR("Cannot set this day of the month, because not all months have it.\nBut you can clamp the day (i.e. ring the alarm on the last day of the month), by specifying '--clamp' as the last argument.");
+                        }
+                        else if (clamp)
+                            WARN("The '--clamp' flag isn't necessary, since all months have at least 28 days.");
+                            
+                        
+                        Alarm alarm = (Alarm) {
+                            .description = description,
+                            .type = (AlarmType) {
+                                .id = ALARM_MONTHLY,
+                                .alarm.monthly = {
+                                    .month_day = month_day,
+                                    .hour = hour,
+                                    .clamp = clamp,
+                                },
+                            },
+                        };
+
+                        alarm_add(alarm);
                     }
 
                     else if (strcasecmp(option, "yearly") == 0) {
