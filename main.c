@@ -114,6 +114,7 @@ int main(int argc, char *argv[]) {
                     }
 
                     else if (strcasecmp(option, "weekly") == 0) {
+                        // <day: index/name> <hh:mm>
                         char *week_days[] = { "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday" };
                         const size_t length = 7;
 
@@ -123,6 +124,7 @@ int main(int argc, char *argv[]) {
                         char *week_day_str = argv[5];
                         char *hour_str = argv[6];
 
+                        // TODO: get by index as well
                         size_t week_day;
                         if ((week_day = get_index_str(week_days, length, week_day_str)) == SIZE_MAX)
                             ERROR("Please specify a valid day of the week.");
@@ -145,7 +147,7 @@ int main(int argc, char *argv[]) {
                             .type = (AlarmType) {
                                 .id = ALARM_WEEKLY,
                                 .alarm.weekly = {
-                                    .week_day = week_day,
+                                    .week_day = (uint8_t) week_day,
                                     .hour = hour,
                                 },
                             },
@@ -155,6 +157,7 @@ int main(int argc, char *argv[]) {
                     }
 
                     else if (strcasecmp(option, "monthly") == 0) {
+                        // <day> <hh:mm>
                         if (argc < 7)
                             ERROR("Please specify the day of the month and the hour.");
 
@@ -185,9 +188,11 @@ int main(int argc, char *argv[]) {
                         if (!is_valid_hour(hour))
                             ERROR("Please specify a valid hour.");
 
-                        if (month_day > 28) {
+                        if (month_day > 31)
+                            ERROR("Please specify a valid day of the month.");
+                        else if (month_day > 28) {
                             if (!clamp)
-                                ERROR("Cannot set this day of the month, because not all months have it.\nBut you can clamp the day (i.e. ring the alarm on the last day of the month), by specifying '--clamp' as the last argument.");
+                                ERROR("Cannot set this day of the month, because not all months have it.\nBut you can clamp the day (i.e. ring the alarm on the last day of the month, if it doesn't have the day), by specifying '--clamp' as the last argument.");
                         }
                         else if (clamp)
                             WARN("The '--clamp' flag isn't necessary, since all months have at least 28 days.");
@@ -209,11 +214,25 @@ int main(int argc, char *argv[]) {
                     }
 
                     else if (strcasecmp(option, "yearly") == 0) {
+                        // <month: index/name> <day> <hh:mm>
+                        char *months[] = { "january", "february", "march", "april", "may", "june",
+                                           "july", "august", "october", "november", "december" };
+                        const size_t length = 12;
+                        
+                        if (argc < 8)
+                            ERROR("Please specify the month, the day of the month and the hour.");
 
+                        char *month_str = argv[5];
+                        char *month_day_str = argv[6];
+                        char *hour_str = argv[7];
+                        
+                        size_t month;
+                        if ((month = get_index_str(months, length, month_str)) == SIZE_MAX)
+                            ERROR("Please specify a valid month.");
                     }
                     
                     else if (strcasecmp(option, "unique") == 0) {
-
+                        // <year> <month: index/name> <day> <hh:mm>
                     }
 
                     else ERROR("Invalid time interval.");
