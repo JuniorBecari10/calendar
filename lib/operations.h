@@ -43,6 +43,7 @@ typedef struct {
             uint8_t month_day;
 
             Hour hour;
+            bool clamp; // because of february, which in leap years it has 29 days
         } yearly;
 
         struct {
@@ -99,8 +100,8 @@ void help();
 void version();
 void watch();
 
-void import_file(char *file);
-void export_file(char *file);
+void import_calendar(char *file);
+void export_calendar(char *file);
 
 void alarm_add(Alarm alarm);
 void alarm_edit(Id id, Alarm alarm);

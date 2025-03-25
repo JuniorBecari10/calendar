@@ -104,21 +104,24 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                         return false;
                     else if (count == 2 && sscanf(token, "%hhd", &minutes) != 1)
                         return false;
-
-                    *out_alarm = (Alarm) {
-                        .description = desc,
-                        .type = (AlarmType) {
-                            .id = id,
-                            .alarm.daily = {
-                                .hour = (Hour) {
-                                    .hours = hours,
-                                    .minutes = minutes,
+                    else if (count >= 3) {
+                        *out_alarm = (Alarm) {
+                            .description = desc,
+                            .type = (AlarmType) {
+                                .id = id,
+                                .alarm.daily = {
+                                    .hour = (Hour) {
+                                        .hours = hours,
+                                        .minutes = minutes,
+                                    }
                                 }
                             }
-                        }
-                    };
+                        };
 
-                    return true;
+                        return true;
+                    }
+
+                    break;
                 }
 
                 case ALARM_WEEKLY: {
@@ -130,22 +133,25 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                         return false;
                     else if (count == 3 && sscanf(token, "%hhd", &minutes) != 1)
                         return false;
-
-                    *out_alarm = (Alarm) {
-                        .description = desc,
-                        .type = (AlarmType) {
-                            .id = id,
-                            .alarm.weekly = {
-                                .week_day = week_day,
-                                .hour = (Hour) {
-                                    .hours = hours,
-                                    .minutes = minutes,
-                                },
+                    else if (count >= 3) {
+                        *out_alarm = (Alarm) {
+                            .description = desc,
+                            .type = (AlarmType) {
+                                .id = id,
+                                .alarm.weekly = {
+                                    .week_day = week_day,
+                                    .hour = (Hour) {
+                                        .hours = hours,
+                                        .minutes = minutes,
+                                    },
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    return true;
+                        return true;
+                    }
+
+                    break;
                 }
 
                 case ALARM_MONTHLY: {
@@ -157,22 +163,25 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                         return false;
                     else if (count == 3 && sscanf(token, "%hhd", &minutes) != 1)
                         return false;
-
-                    *out_alarm = (Alarm) {
-                        .description = desc,
-                        .type = (AlarmType) {
-                            .id = id,
-                            .alarm.monthly = {
-                                .month_day = month_day,
-                                .hour = (Hour) {
-                                    .hours = hours,
-                                    .minutes = minutes,
-                                },
+                    else if (count >= 4) {
+                        *out_alarm = (Alarm) {
+                            .description = desc,
+                            .type = (AlarmType) {
+                                .id = id,
+                                .alarm.monthly = {
+                                    .month_day = month_day,
+                                    .hour = (Hour) {
+                                        .hours = hours,
+                                        .minutes = minutes,
+                                    },
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    return true;
+                        return true;
+                    }
+
+                    break;
                 }
 
                 case ALARM_YEARLY: {
@@ -186,23 +195,26 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                         return false;
                     else if (count == 4 && sscanf(token, "%hhd", &minutes) != 1)
                         return false;
-
-                    *out_alarm = (Alarm) {
-                        .description = desc,
-                        .type = (AlarmType) {
-                            .id = id,
-                            .alarm.yearly = {
-                                .month_day = month_day,
-                                .month = month,
-                                .hour = (Hour) {
-                                    .hours = hours,
-                                    .minutes = minutes,
-                                },
+                    else if (count >= 5) {
+                        *out_alarm = (Alarm) {
+                            .description = desc,
+                            .type = (AlarmType) {
+                                .id = id,
+                                .alarm.yearly = {
+                                    .month_day = month_day,
+                                    .month = month,
+                                    .hour = (Hour) {
+                                        .hours = hours,
+                                        .minutes = minutes,
+                                    },
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    return true;
+                        return true;
+                    }
+
+                    break;
                 }
 
                 case ALARM_UNIQUE: {
@@ -219,23 +231,26 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                         return false;
                     else if (count == 5 && sscanf(token, "%hhd", &minutes) != 1)
                         return false;
-
-                    *out_alarm = (Alarm) {
-                        .description = desc,
-                        .type = (AlarmType) {
-                            .id = id,
-                            .alarm.yearly = {
-                                .month_day = month_day,
-                                .month = month,
-                                .hour = (Hour) {
-                                    .hours = hours,
-                                    .minutes = minutes,
-                                },
+                    else if (count >= 6) {
+                        *out_alarm = (Alarm) {
+                            .description = desc,
+                            .type = (AlarmType) {
+                                .id = id,
+                                .alarm.yearly = {
+                                    .month_day = month_day,
+                                    .month = month,
+                                    .hour = (Hour) {
+                                        .hours = hours,
+                                        .minutes = minutes,
+                                    },
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    return true;
+                        return true;
+                    }
+
+                    break;
                 }
             }
         }

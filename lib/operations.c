@@ -49,11 +49,11 @@ void watch() {
     fprintf(stderr, "Not implemented yet.\n");
 }
 
-void import_file(char *file) {
+void import_calendar(char *file) {
     fprintf(stderr, "Not implemented yet.\n");
 }
 
-void export_file(char *file) {
+void export_calendar(char *file) {
     fprintf(stderr, "Not implemented yet.\n");
 }
 

@@ -8,20 +8,22 @@
 #define SEPARATOR "|"
 #define SEPARATOR_CHAR '|'
 
-#define ERROR(message)                 \
-    do {                               \
+#define ERROR(message)                           \
+    do {                                         \
         fprintf(stderr, "Error: " message "\n"); \
-        return 1;                      \
+        return 1;                                \
     } while (0)
 
-#define PERROR(message)                \
-    do {                               \
+#define PERROR(message)                          \
+    do {                                         \
         fprintf(stderr, "Error: " message "\n"); \
     } while (0)
 
-#define WARN(message) fprintf(stderr, "Warning: " message "\n");
+#define WARN(message)                            \
+    fprintf(stderr, "Warning: " message "\n");
 
 bool is_valid_hour(Hour hour);
+bool month_has_day(uint8_t month, uint8_t day);
 size_t get_index_str(char *arr[], size_t size, char *value);
 
 #endif
