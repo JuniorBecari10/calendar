@@ -14,31 +14,31 @@ typedef enum {
     ALARM_WEEKLY,
     ALARM_MONTHLY,
     ALARM_YEARLY,
-    ALARM_UNIQUE,
+    ALARM_ONCE,
 } AlarmTypeId;
 
 typedef struct {
     AlarmTypeId id;
     
     union {
-        struct {
-            Hour hour;            
+        struct AlarmDaily {
+            Hour hour;
         } daily;
 
-        struct {
+        struct AlarmWeekly {
             uint8_t week_day;
             Hour hour;
         } weekly;
 
-        struct {
+        struct AlarmMonthly {
             uint8_t month_day;
             Hour hour;
-            bool clamp; // clamps the day if the current month doesn't have enough days
+            bool clamp; // clamps the day if the current month doesn't have enough days.
                         // (ex.: month_day = 31. February doesn't have 31 days, so the alarm will ring on the last day, which
                         // can be either 28 or 29). default is false.
         } monthly;
 
-        struct {
+        struct AlarmYearly {
             uint8_t month;
             uint8_t month_day;
 
@@ -46,13 +46,13 @@ typedef struct {
             bool clamp; // because of february, which in leap years it has 29 days
         } yearly;
 
-        struct {
+        struct AlarmOnce {
             uint32_t year;
             uint8_t month;
             uint8_t month_day;
 
             Hour hour;
-        } unique;
+        } once;
     } alarm;
 } AlarmType;
 
@@ -81,12 +81,12 @@ typedef AlarmTypeId AlarmFilter;
  * 
  * alarm:
  *     add <description> (daily <hh:mm> | weekly <week-day> <hh:mm>
- *         | monthly <day*> <hh:mm> | yearly <day> <month> <hh:mm> | unique <day> <month> <year> <hh:mm>) -> add an alarm for the specified interval
+ *         | monthly <day*> <hh:mm> | yearly <day> <month> <hh:mm> | once <day> <month> <year> <hh:mm>) -> add an alarm for the specified interval
  *     *: that is available on all months
  *
  *     edit <id> /same as 'add'/
  *
- *     list [daily | weekly | monthly | unique] -> lists all the alarms acording to the specified filters
+ *     list [daily | weekly | monthly | once] -> lists all the alarms acording to the specified filters
  *     remove <id> -> removes the specified alarm
  */
 

@@ -6,14 +6,18 @@
 #include "lib/operations.h"
 #include "lib/util.h"
 
-int scan_month(char *input, int8_t *output);
-int scan_year(char *input, int32_t *output);
-int scan_hour(char *input, Hour *output);
+static int scan_month_day(char *input, uint8_t *output, bool clamp);
+static int scan_specific_month_day(char *input, uint8_t *output, bool clamp);
+static int scan_exact_month_day(char *input, uint8_t *output, int32_t year);
+static int scan_month(char *input, uint8_t *output);
+static int scan_year(char *input, int32_t *output);
+static int scan_hour(char *input, Hour *output);
+static int scan_week_day(char *input, uint8_t *output);
 
-int parse_alarm_add(int len, char *args[]);
-int parse_alarm_edit(int len, char *args[]);
-int parse_alarm_list(char *filter);
-int remove_alarm(char *id);
+static int parse_alarm_add(int len, char *args[]);
+static int parse_alarm_edit(int len, char *args[]);
+static int parse_alarm_list(char *filter);
+static int remove_alarm(char *id);
 
 int main(int argc, char *argv[]) {
     if (argc == 1) {
@@ -55,10 +59,10 @@ int main(int argc, char *argv[]) {
             parse_alarm_edit(argc, argv);
         
         else if (strcasecmp(suboption, "list") == 0 && argc >= 1)
-            parse_alarm_list(argv[1]);
+            parse_alarm_list(argv[0]);
         
         else if (strcasecmp(suboption, "remove") == 0 && argc == 1)
-            remove_alarm(argv[1]);
+            remove_alarm(argv[0]);
         
         else
             ERROR("Invalid alarm option or incorrect number of arguments.");
@@ -74,7 +78,7 @@ int main(int argc, char *argv[]) {
     }
 
     else if (argc == 3) {
-        int8_t month;
+        uint8_t month;
         int32_t year;
 
         if (scan_month(argv[1], &month) != 0 || scan_year(argv[2], &year) != 0)
@@ -89,7 +93,32 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-int scan_month(char *input, int8_t *output) {
+static int scan_month_day(char *input, uint8_t *output, bool clamp) {
+    if (sscanf(input, "%hhd", output) != 1)
+        ERROR("Invalid day of the month.");
+
+    if (*output < 1 || *output > 31)
+        ERROR("Day of the month must be between 1 and 31.");
+
+    if (*output > 28 && !clamp)
+        ERROR("Not all months have this day of the month. Please specify the '--clamp' flag to clamp the day in months that don't have it.");
+
+    return 0;
+}
+
+// checks if the day of a specific month exists in all years.
+// all months have predefined days, except for February, which in leap years it has one more day.
+static int scan_specific_month_day(char *input, uint8_t *output, bool clamp) {
+
+}
+
+// checks if the exact day of a specific year exists.
+// this doesn't need to clamp, because this checks for an specific date.
+static int scan_exact_month_day(char *input, uint8_t *output, int32_t year) {
+
+}
+
+static int scan_month(char *input, uint8_t *output) {
     if (sscanf(input, "%hhd", output) != 1)
         ERROR("Invalid month.");
 
@@ -99,7 +128,7 @@ int scan_month(char *input, int8_t *output) {
     return 0;
 }
 
-int scan_year(char *input, int32_t *output) {
+static int scan_year(char *input, int32_t *output) {
     if (sscanf(input, "%d", output) != 1)
         ERROR("Invalid year.");
 
@@ -109,23 +138,48 @@ int scan_year(char *input, int32_t *output) {
     return 0;
 }
 
-int scan_hour(char *input, Hour *output) {
+static int scan_hour(char *input, Hour *output) {
+    uint8_t hours, minutes;
+    if (sscanf(input, "%hhd:%hhd", &hours, &minutes) != 2)
+        ERROR("Please specify the hour correctly: 'hh:mm'.");
 
+    *output = (Hour) {
+        .hours = hours,
+        .minutes = minutes,
+    };
+
+    if (!is_valid_hour(*output))
+        ERROR("Please specify a valid hour.");
+
+    return 0;
 }
 
-int parse_alarm_add(int len, char *args[]) {
+static int scan_week_day(char *input, uint8_t *output) {
+    if (sscanf(input, "%hhd", output) != 1)
+        ERROR("Invalid day of the week.");
+
+    if (*output < 1 || *output > 7)
+        ERROR("Day of the week must be between 1 and 7.");
+
+    return 0;
+}
+
+static int parse_alarm_add(int len, char *args[]) {
     char *description = args[0]; // guaranteed
 
     if (strchr(description, SEPARATOR_CHAR) != NULL)
         ERROR("The description must not contain '" SEPARATOR "\'.");
     
-    if (len == 1)
+    if (len <= 1)
         ERROR("Please specify the frequency.");
     
     char *freq = args[1];
     Alarm alarm;
 
     if (strcasecmp(freq, "daily") == 0) {
+        if (len < 3)
+            ERROR("Usage: daily <hour>.");
+
         Hour hour;
         if (scan_hour(args[2], &hour) != 0)
             return 1;
@@ -142,22 +196,127 @@ int parse_alarm_add(int len, char *args[]) {
     }
     
     else if (strcasecmp(freq, "weekly") == 0) {
+        if (len < 4)
+            ERROR("Usage: weekly <day of the week> <hour>.");
 
+        uint8_t week_day;
+        Hour hour;
+
+        if (scan_week_day(args[2], &week_day) != 0 || scan_hour(args[3], &hour) != 0)
+            return 1;
+
+        alarm = (Alarm) {
+            .description = description,
+            .type = (AlarmType) {
+                .id = ALARM_WEEKLY,
+                .alarm.weekly = {
+                    .week_day = week_day,
+                    .hour = hour,
+                },
+            },
+        };
     }
+
+    else if (strcasecmp(freq, "monthly") == 0) {
+        if (len < 4)
+            ERROR("Usage: monthly <day of the month> <hour> [--clamp].");
+
+        uint8_t month_day;
+        Hour hour;
+        bool clamp = false;
+
+        if (len >= 5 && strcasecmp(args[4], "--clamp") == 0)
+            clamp = true;
+
+        if (scan_month_day(args[2], &month_day, clamp) != 0 || scan_hour(args[3], &hour) != 0)
+            return 1;
+
+        alarm = (Alarm) {
+            .description = description,
+            .type = (AlarmType) {
+                .id = ALARM_MONTHLY,
+                .alarm.monthly = {
+                    .month_day = month_day,
+                    .hour = hour,
+                    .clamp = clamp,
+                },
+            },
+        };
+    }
+
+    else if (strcasecmp(freq, "yearly") == 0) {
+        if (len < 5)
+            ERROR("Usage: yearly <month> <day of the month> <hour> [--clamp].");
+
+        uint8_t month, month_day;
+        Hour hour;
+        bool clamp = false;
+
+        if (len >= 6 && strcasecmp(args[5], "--clamp") == 0)
+            clamp = true;
+        
+        if (scan_month(args[2], &month) != 0 ||
+            scan_specific_month_day(args[3], &month_day, clamp) != 0 ||
+            scan_hour(args[4], &hour) != 0)
+            return 1;
+
+        alarm = (Alarm) {
+            .description = description,
+            .type = (AlarmType) {
+                .id = ALARM_YEARLY,
+                .alarm.yearly = {
+                    .month = month,
+                    .month_day = month_day,
+                    .hour = hour,
+                    .clamp = clamp,
+                },
+            },
+        };
+    }
+
+    else if (strcasecmp(freq, "once") == 0) {
+        if (len < 6)
+            ERROR("Usage: once <year> <month> <day of the month> <hour>.");
+        
+        uint8_t month, month_day;
+        int32_t year;
+        Hour hour;
+
+        if (scan_year(args[2], &year) != 0 ||
+            scan_month(args[3], &month) != 0 ||
+            scan_exact_month_day(args[4], &month_day, year) != 0 ||
+            scan_hour(args[5], &hour) != 0)
+            return 1;
+
+        alarm = (Alarm) {
+            .description = description,
+            .type = (AlarmType) {
+                .id = ALARM_ONCE,
+                .alarm.once = {
+                    .year = year,
+                    .month = month,
+                    .month_day = month_day,
+                    .hour = hour,
+                },
+            },
+        };
+    }
+
+    else ERROR("Usage: add <daily | weekly | monthly | yearly | once>.");
 
     alarm_add(alarm);
     return 0;
 }
 
-int parse_alarm_edit(int len, char *args[]) {
+static int parse_alarm_edit(int len, char *args[]) {
 
 }
 
-int parse_alarm_list(char *filter) {
+static int parse_alarm_list(char *filter) {
 
 }
 
-int remove_alarm(char *id) {
+static int remove_alarm(char *id) {
 
 }
 

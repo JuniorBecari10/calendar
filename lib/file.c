@@ -63,14 +63,14 @@ void write_to_file(AlarmList list) {
  *     0 = daily
  *     1 = weekly
  *     2 = monthly
- *     3 = unique
+ *     3 = once
  * 
  * data:
  *     daily:   hour|minute
  *     weekly:  week_day|hour|minute
  *     monthly: month_day|hour|minute
  *     yearly:  month_day|month|hour|minute
- *     unique:  month_day|month|year|hour|minute
+ *     once:    month_day|month|year|hour|minute
  * 
  * Descriptions must not have the separator character.
  */
@@ -91,7 +91,7 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                 case 0: id = ALARM_DAILY;   break;
                 case 1: id = ALARM_WEEKLY;  break;
                 case 2: id = ALARM_MONTHLY; break;
-                case 3: id = ALARM_UNIQUE;  break;
+                case 3: id = ALARM_ONCE;    break;
             }
         }
 
@@ -217,7 +217,7 @@ static bool parse_line(char *line, Alarm *out_alarm) {
                     break;
                 }
 
-                case ALARM_UNIQUE: {
+                case ALARM_ONCE: {
                     uint8_t month_day, month, hours, minutes;
                     uint32_t year;
                     
