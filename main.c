@@ -1,6 +1,6 @@
+#include <string.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
 #include <strings.h>
 
 #include "lib/operations.h"
@@ -8,6 +8,7 @@
 
 int scan_month(char *input, int8_t *output);
 int scan_year(char *input, int32_t *output);
+int scan_hour(char *input, Hour *output);
 
 int parse_alarm_add(int len, char *args[]);
 int parse_alarm_edit(int len, char *args[]);
@@ -44,23 +45,23 @@ int main(int argc, char *argv[]) {
         char *suboption = argv[2];
        
         // adjust args to point to the relevant information
-        argc -= 2;
-        argv += 2;
+        argc -= 3;
+        argv += 3;
 
-        if (strcasecmp(suboption, "add") == 0 && argc >= 3)
+        if (strcasecmp(suboption, "add") == 0 && argc >= 2)
             parse_alarm_add(argc, argv);
         
-        else if (strcasecmp(suboption, "edit") == 0 && argc >= 2)
+        else if (strcasecmp(suboption, "edit") == 0 && argc >= 1)
             parse_alarm_edit(argc, argv);
         
-        else if (strcasecmp(suboption, "list") == 0 && argc >= 2)
+        else if (strcasecmp(suboption, "list") == 0 && argc >= 1)
             parse_alarm_list(argv[1]);
         
-        else if (strcasecmp(suboption, "remove") == 0 && argc == 2)
+        else if (strcasecmp(suboption, "remove") == 0 && argc == 1)
             remove_alarm(argv[1]);
         
         else
-            ERROR("Invalid alarm option.");
+            ERROR("Invalid alarm option or incorrect number of arguments.");
     }
 
     else if (argc == 2) {
@@ -108,8 +109,44 @@ int scan_year(char *input, int32_t *output) {
     return 0;
 }
 
-int parse_alarm_add(int len, char *args[]) {
+int scan_hour(char *input, Hour *output) {
 
+}
+
+int parse_alarm_add(int len, char *args[]) {
+    char *description = args[0]; // guaranteed
+
+    if (strchr(description, SEPARATOR_CHAR) != NULL)
+        ERROR("The description must not contain '" SEPARATOR "\'.");
+    
+    if (len == 1)
+        ERROR("Please specify the frequency.");
+    
+    char *freq = args[1];
+    Alarm alarm;
+
+    if (strcasecmp(freq, "daily") == 0) {
+        Hour hour;
+        if (scan_hour(args[2], &hour) != 0)
+            return 1;
+
+        alarm = (Alarm) {
+            .description = description,
+            .type = (AlarmType) {
+                .id = ALARM_DAILY,
+                .alarm.daily = {
+                    .hour = hour,
+                },
+            },
+        };
+    }
+    
+    else if (strcasecmp(freq, "weekly") == 0) {
+
+    }
+
+    alarm_add(alarm);
+    return 0;
 }
 
 int parse_alarm_edit(int len, char *args[]) {
