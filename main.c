@@ -2,12 +2,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <strings.h>
+#include <stdbool.h>
 
+#include "lib/calendar.h"
 #include "lib/operations.h"
 #include "lib/util.h"
 
 static int scan_month_day(char *input, uint8_t *output, bool clamp);
-static int scan_specific_month_day(char *input, uint8_t *output, bool clamp);
+static int scan_specific_month_day(char *input, uint8_t *output, uint8_t month, bool clamp);
 static int scan_exact_month_day(char *input, uint8_t *output, int32_t year);
 static int scan_month(char *input, uint8_t *output);
 static int scan_year(char *input, int32_t *output);
@@ -107,15 +109,41 @@ static int scan_month_day(char *input, uint8_t *output, bool clamp) {
 }
 
 // checks if the day of a specific month exists in all years.
-// all months have predefined days, except for February, which in leap years it has one more day.
-static int scan_specific_month_day(char *input, uint8_t *output, bool clamp) {
+// all months have predefined days, except for February, which in leap years it has one more day. this is why we need 'clamp'.
+// 'month' is base 0.
+static int scan_specific_month_day(char *input, uint8_t *output, uint8_t month, bool clamp) {
+    // we won't consider February with 29 days in leap years, because this checks in all years, and February has at least 28 days.
+    static const uint8_t days_in_month[] = { 
+        31, 28, 31, 30, 31, 30,
+        31, 31, 30, 31, 30, 31,
+    };
+    
+    if (sscanf(input, "%hhd", output) != 1)
+        ERROR("Invalid day of the month.");
 
+    // check if clamp is necessary for February
+    if (month == 1 && *output > 28 && !clamp)
+        ERROR("Not all February months have 29 days. Use the '--clamp' flag to clamp the day.");
+
+    if (*output > days_in_month[month])
+        ERROR("This month doesn't have this amount of days.");
+
+    return 0; 
 }
 
 // checks if the exact day of a specific year exists.
 // this doesn't need to clamp, because this checks for an specific date.
 static int scan_exact_month_day(char *input, uint8_t *output, int32_t year) {
+    static uint8_t days_in_month[] = { 
+        31, 28, 31, 30, 31, 30,
+        31, 31, 30, 31, 30, 31,
+    };
 
+    if (is_leap_year(year))
+        days_in_month[1] = 29;
+    
+    if (sscanf(input, "%hhd", output) != 1)
+        ERROR("Invalid day of the month.");
 }
 
 static int scan_month(char *input, uint8_t *output) {
@@ -256,7 +284,7 @@ static int parse_alarm_add(int len, char *args[]) {
             clamp = true;
         
         if (scan_month(args[2], &month) != 0 ||
-            scan_specific_month_day(args[3], &month_day, clamp) != 0 ||
+            scan_specific_month_day(args[3], &month_day, month, clamp) != 0 ||
             scan_hour(args[4], &hour) != 0)
             return 1;
 

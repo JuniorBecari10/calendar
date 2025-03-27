@@ -4,7 +4,6 @@
 
 #include "calendar.h"
 
-static bool is_leap_year(int32_t year);
 static int32_t leap_years(int32_t year);
 static int32_t today_of(int32_t year, int32_t month, int32_t day);
 static uint64_t num_days(int32_t year, int32_t month, int32_t day);
@@ -42,7 +41,7 @@ void print_calendar(int32_t year, int32_t month) {
     printf("\n");
 }
 
-static bool is_leap_year(int32_t year) {
+bool is_leap_year(int32_t year) {
     return (year % 400 == 0)
         || ((year % 4 == 0)
         && (year % 100 != 0));
