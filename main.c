@@ -10,7 +10,7 @@
 
 static int scan_month_day(char *input, uint8_t *output, bool clamp);
 static int scan_specific_month_day(char *input, uint8_t *output, uint8_t month, bool clamp);
-static int scan_exact_month_day(char *input, uint8_t *output, int32_t year);
+static int scan_exact_month_day(char *input, uint8_t *output, uint8_t month, int32_t year);
 static int scan_month(char *input, uint8_t *output);
 static int scan_year(char *input, int32_t *output);
 static int scan_hour(char *input, Hour *output);
@@ -20,6 +20,8 @@ static int parse_alarm_add(int len, char *args[]);
 static int parse_alarm_edit(int len, char *args[]);
 static int parse_alarm_list(char *filter);
 static int remove_alarm(char *id);
+
+static int check_description(char *description);
 
 int main(int argc, char *argv[]) {
     if (argc == 1) {
@@ -113,7 +115,7 @@ static int scan_month_day(char *input, uint8_t *output, bool clamp) {
 // 'month' is base 0.
 static int scan_specific_month_day(char *input, uint8_t *output, uint8_t month, bool clamp) {
     // we won't consider February with 29 days in leap years, because this checks in all years, and February has at least 28 days.
-    static const uint8_t days_in_month[] = { 
+    static const uint8_t days_in_month[] = {
         31, 28, 31, 30, 31, 30,
         31, 31, 30, 31, 30, 31,
     };
@@ -133,7 +135,7 @@ static int scan_specific_month_day(char *input, uint8_t *output, uint8_t month, 
 
 // checks if the exact day of a specific year exists.
 // this doesn't need to clamp, because this checks for an specific date.
-static int scan_exact_month_day(char *input, uint8_t *output, int32_t year) {
+static int scan_exact_month_day(char *input, uint8_t *output, uint8_t month, int32_t year) {
     static uint8_t days_in_month[] = { 
         31, 28, 31, 30, 31, 30,
         31, 31, 30, 31, 30, 31,
@@ -144,6 +146,11 @@ static int scan_exact_month_day(char *input, uint8_t *output, int32_t year) {
     
     if (sscanf(input, "%hhd", output) != 1)
         ERROR("Invalid day of the month.");
+
+    if (*output > days_in_month[month])
+        ERROR("This month doesn't have this amount of days.");
+
+    return 0;
 }
 
 static int scan_month(char *input, uint8_t *output) {
@@ -194,9 +201,9 @@ static int scan_week_day(char *input, uint8_t *output) {
 
 static int parse_alarm_add(int len, char *args[]) {
     char *description = args[0]; // guaranteed
-
-    if (strchr(description, SEPARATOR_CHAR) != NULL)
-        ERROR("The description must not contain '" SEPARATOR "\'.");
+    
+    if (check_description(description) != 0)
+        return 1;
     
     if (len <= 1)
         ERROR("Please specify the frequency.");
@@ -312,7 +319,7 @@ static int parse_alarm_add(int len, char *args[]) {
 
         if (scan_year(args[2], &year) != 0 ||
             scan_month(args[3], &month) != 0 ||
-            scan_exact_month_day(args[4], &month_day, year) != 0 ||
+            scan_exact_month_day(args[4], &month_day, month, year) != 0 ||
             scan_hour(args[5], &hour) != 0)
             return 1;
 
@@ -330,7 +337,7 @@ static int parse_alarm_add(int len, char *args[]) {
         };
     }
 
-    else ERROR("Usage: add <daily | weekly | monthly | yearly | once>.");
+    else ERROR("Usage: add <description> <daily | weekly | monthly | yearly | once>.");
 
     alarm_add(alarm);
     return 0;
@@ -348,3 +355,9 @@ static int remove_alarm(char *id) {
 
 }
 
+static int check_description(char *description) {
+    if (strchr(description, SEPARATOR_CHAR) != NULL)
+        ERROR("The description must not contain '" SEPARATOR "\'.");
+
+    return 0;
+}
