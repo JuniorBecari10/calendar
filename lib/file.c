@@ -11,8 +11,7 @@
 static bool parse_line(char *line, Alarm *out_alarm);
 
 bool parse_file(AlarmList *out_list) {
-    // for now
-    FILE *file = fopen(".alarms", "r");
+    FILE *file = get_file_reader();
     *out_list = new_alarm_list();
     
     if (!file) {
@@ -38,7 +37,7 @@ bool parse_file(AlarmList *out_list) {
         Alarm alarm;
         if (!parse_line(line, &alarm)) {
             // error during line parse. the program may not function correctly.
-            PERROR("Parse error: could not parse alarms file.");
+            PERROR("Parse error: could not parse calendar file.");
             free_alarm_list(out_list);
 
             return false;

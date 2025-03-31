@@ -66,9 +66,7 @@ static FILE *open_file(const char *mode) {
 
     free(path);
 
-    if (f == NULL)
-        PERROR("Cannot open calendar file.");
-    
+    // if 'f' is 'NULL', don't do anything
     return f;
 }
 
