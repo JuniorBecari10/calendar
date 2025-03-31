@@ -2,11 +2,18 @@
 #define UTIL_H
 
 #include "operations.h"
+
+#include <stdio.h>
 #include <stdbool.h>
 #include <stddef.h>
 
 #define SEPARATOR "|"
 #define SEPARATOR_CHAR '|'
+
+#define MAX_DESCRIPTION_LENGTH 1024
+
+// should not be used alone, because it doesn't have the path included.
+#define FILE_NAME ".calendar"
 
 #define ERROR(message)                           \
     do {                                         \
@@ -25,5 +32,12 @@
 bool is_valid_hour(Hour hour);
 bool month_has_day(uint8_t month, uint8_t day);
 size_t get_index_str(char *arr[], size_t size, char *value);
+
+// must be freed.
+char *get_file_path();
+
+// must be 'fclose'd.
+FILE *get_file_writer();
+FILE *get_file_reader();
 
 #endif

@@ -359,5 +359,8 @@ static int check_description(char *description) {
     if (strchr(description, SEPARATOR_CHAR) != NULL)
         ERROR("The description must not contain '" SEPARATOR "\'.");
 
+    if (strlen(description) > MAX_DESCRIPTION_LENGTH)
+        ERROR("Description too long. Must have less than 1024 characters.");
+
     return 0;
 }

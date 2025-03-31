@@ -2,7 +2,6 @@
 #include "operations.h"
 #include "util.h"
 
-#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -19,6 +18,7 @@ bool parse_file(AlarmList *out_list) {
     if (!file) {
         // the file doesn't exist yet or some another error.
         // either case, we'll return an empty list.
+        // and return true in this function, so that the caller can continue its control flow.
 
         return true;
     }
@@ -51,7 +51,7 @@ bool parse_file(AlarmList *out_list) {
     return true;
 }
 
-void write_to_file(AlarmList list) {
+bool write_to_file(AlarmList list) {
 
 }
 

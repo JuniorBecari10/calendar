@@ -61,8 +61,13 @@ void alarm_add(Alarm alarm) {
     AlarmList list;
     if (!parse_file(&list)) return;
 
-    fprintf(stderr, "Not implemented yet.\n");
+    push(&list, alarm);
+
+    if (!write_to_file(list)) return;
     free_alarm_list(&list);
+
+    // TODO: pretty print the alarm
+    printf("Alarm added successfully.\n");
 }
 
 void alarm_edit(Id id, Alarm alarm) {
