@@ -41,10 +41,10 @@ char *get_file_path() {
     }
     
     size_t path_length = strlen(pw->pw_dir) + strlen(FILE_NAME) + 2; // 1 for '/' and 1 for null terminator
-    char *file_path = (char *)malloc(path_length);
+    char *file_path = (char *) malloc(path_length);
     
     if (file_path == NULL) {
-        perror("malloc");
+        perror("allocation");
         return NULL;
     }
 

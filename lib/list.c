@@ -19,7 +19,7 @@ void free_alarm_list(AlarmList *l) {
 
 void push(AlarmList *l, Alarm alarm) {
     if (l->list == NULL) {
-        l->list = malloc(INITIAL_CAP * sizeof(Alarm));
+        l->list = (Alarm *) malloc(INITIAL_CAP * sizeof(Alarm));
         l->cap = INITIAL_CAP;
     }
 

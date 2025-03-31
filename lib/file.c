@@ -52,7 +52,8 @@ bool parse_file(AlarmList *out_list) {
 }
 
 bool write_to_file(AlarmList list) {
-
+    // TODO: implement
+    return true;
 }
 
 /*
