@@ -93,7 +93,7 @@ typedef struct AlarmOnce Date;
  * version -> show version and details ok
  * watch -> watch mode, where the app can work and ring your alarms ok*
  *
- * import <file> -> set the global '.calendar' file to the specified one if it's valid ok*
+ * import <file> [-y] -> set the global '.calendar' file to the specified one if it's valid, '-y' flag to not ask for confirmation ok*
  * export <file> -> export the current '.calendar' file to the specified file ok*
  * 
  * alarm:

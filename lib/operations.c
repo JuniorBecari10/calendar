@@ -44,7 +44,46 @@ void print_now() {
 }
 
 void help() {
-    PERROR("Not implemented yet.");
+    printf(
+        "Calendar CLI\n\n"
+
+        "Commands:\n"
+        "    (no args)             - show current month\n"
+        "    <year>                - print all months of the specified year\n"
+        "    <month> <year>        - print the specified month of the specified year.\n\n"
+
+        "    now                   - show current day of the week, date and time\n"
+        "    help                  - show this help message\n"
+        "    version               - show version information\n"
+        "    watch                 - watch mode; required for the alarms to ring\n\n"
+
+        "    import <file> [-y]    - import calendar from the specified file. this operation discards the current calendar file.\n"
+        "    export <file>         - export calendar to the specified file.\n\n"
+
+        "    alarm                 - manage alarms\n"
+        "        add <description> - add a new alarm\n"
+        "            | daily   <hour - hh:mm>\n"
+        "            | weekly  <day of the week - 1-7> <hour - hh:mm>\n"
+        "            | monthly <day of the month> <hour - hh:mm> [--clamp]\n"
+        "            | yearly  <month - 1-12> <day of the month> <hour - hh:mm> [--clamp]\n"
+        "            | once    <year> <month - 1-12> <day of the month> <hour - hh:mm>\n\n"
+
+        "        edit <id> <description> - edits an existing alarm\n"
+        "            | daily   <hour - hh:mm>\n"
+        "            | weekly  <day of the week - 1-7> <hour - hh:mm>\n"
+        "            | monthly <day of the month> <hour - hh:mm> [--clamp]\n"
+        "            | yearly  <month - 1-12> <day of the month> <hour - hh:mm> [--clamp]\n"
+        "            | once    <year> <month - 1-12> <day of the month> <hour - hh:mm>\n\n"
+
+        "       list [\n"
+        "            | daily\n"
+        "            | weekly\n"
+        "            | monthly\n"
+        "            | yearly\n"
+        "            | once\n"
+        "            ]             - lists all the alarms acording to the specified filters\n"
+        "       remove <id>        - removes the specified alarm\n"
+    );
 }
 
 void version() {
