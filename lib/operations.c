@@ -31,13 +31,19 @@ void print_month(int month, int year) {
 }
 
 void print_now() {
-    const char *days_of_the_week[] = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+    DateComplete now = now_complete();
 
-    time_t t = time(NULL);
-    struct tm tm = *localtime(&t);
-    
-    // TODO: reuse existing code
-    printf("%s, %d/%02d/%02d %02d:%02d:%02d\n", days_of_the_week[tm.tm_wday], tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    print_week_day(now.week_day);
+    printf(", ");
+
+    pretty_print_month(now.month);
+    printf(" %hhd, %d (", now.month_day, now.year);
+
+    print_date_iso(now.year, now.month, now.month_day);
+    printf(") ");
+
+    print_hour_seconds(now.hour);
+    printf("\n");
 }
 
 void help() {

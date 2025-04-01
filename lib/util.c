@@ -1,4 +1,5 @@
 #include "util.h"
+#include "operations.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -113,17 +114,36 @@ bool date_has_passed(Date then, Date now) {
 }
 
 Date now() {
-    Date current;
-
     time_t t = time(NULL);
     struct tm *tm_info = localtime(&t);
 
-    current.year = tm_info->tm_year + 1900;
-    current.month = tm_info->tm_mon + 1;
-    current.month_day = tm_info->tm_mday;
+    return (Date) {
+        .year = tm_info->tm_year + 1900,
+        .month = tm_info->tm_mon + 1,
+        .month_day = tm_info->tm_mday,
 
-    current.hour.hours = tm_info->tm_hour;
-    current.hour.minutes = tm_info->tm_min;
-
-    return current;
+        .hour = (Hour) {
+            .hours = tm_info->tm_hour,
+            .minutes = tm_info->tm_min,
+        },
+    };
 }
+
+DateComplete now_complete() {
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+
+    return (DateComplete) {
+        .year = tm_info->tm_year + 1900,
+        .month = tm_info->tm_mon + 1,
+        .month_day = tm_info->tm_mday,
+        .week_day = tm_info->tm_wday,
+
+        .hour = (HourSeconds) {
+            .hours = tm_info->tm_hour,
+            .minutes = tm_info->tm_min,
+            .seconds = tm_info->tm_sec,
+        },
+    };
+}
+

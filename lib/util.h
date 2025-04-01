@@ -44,6 +44,8 @@ int random_number(int min, int max);
 uint32_t random_uint32();
 
 bool date_has_passed(Date then, Date now);
+
 Date now();
+DateComplete now_complete();
 
 #endif

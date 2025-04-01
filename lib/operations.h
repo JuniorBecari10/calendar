@@ -9,6 +9,21 @@ typedef struct {
     uint8_t minutes;
 } Hour;
 
+typedef struct {
+    uint8_t hours;
+    uint8_t minutes;
+    uint8_t seconds;
+} HourSeconds;
+
+typedef struct {
+    uint32_t year;
+    uint8_t month;
+    uint8_t month_day;
+    uint8_t week_day;
+
+    HourSeconds hour;
+} DateComplete;
+
 typedef enum {
     ALARM_DAILY,
     ALARM_WEEKLY,

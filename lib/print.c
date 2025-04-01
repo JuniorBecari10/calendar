@@ -3,11 +3,6 @@
 #include "print.h"
 #include "operations.h"
 
-static void print_hour(Hour hour);
-static void print_week_day(uint8_t day);
-static void pretty_print_month(uint8_t month);
-
-static void print_date_iso(uint32_t year, uint8_t month, uint8_t day);
 static void print_date_iso_no_year(uint8_t month, uint8_t day);
 
 // desc | id | <details>
@@ -89,11 +84,15 @@ void print_alarm(Alarm alarm) {
     }
 }
 
-static void print_hour(Hour hour) {
+void print_hour(Hour hour) {
     printf("%02hhd:%02hhd", hour.hours, hour.minutes);
 }
 
-static void print_week_day(uint8_t day) {
+void print_hour_seconds(HourSeconds hour) {
+    printf("%02hhd:%02hhd:%02hhd", hour.hours, hour.minutes, hour.seconds);
+}
+
+void print_week_day(uint8_t day) {
     #define X(a) printf(a); break
 
     switch (day) {
@@ -109,7 +108,7 @@ static void print_week_day(uint8_t day) {
     #undef X
 }
 
-static void pretty_print_month(uint8_t month) {
+void pretty_print_month(uint8_t month) {
     #define X(a) printf(a); break
 
     switch (month) {
@@ -130,7 +129,7 @@ static void pretty_print_month(uint8_t month) {
     #undef X
 }
 
-static void print_date_iso(uint32_t year, uint8_t month, uint8_t day) {
+void print_date_iso(uint32_t year, uint8_t month, uint8_t day) {
     printf("%d-%02d-%02d", year, month, day);
 }
 
