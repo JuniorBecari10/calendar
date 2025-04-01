@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <time.h>
 
 #include "operations.h"
 #include "calendar.h"
@@ -11,10 +10,8 @@
 const char *VERSION = "v0.1 Alpha";
 
 void print_current_month() {
-    time_t t = time(NULL);
-    struct tm tm = *localtime(&t);
-
-    print_calendar(tm.tm_year + 1900, tm.tm_mon + 1);
+    Date date_now = now();
+    print_calendar(date_now.year, date_now.month);
 }
 
 void print_year(int year) {
@@ -47,23 +44,23 @@ void print_now() {
 }
 
 void help() {
-    fprintf(stderr, "Not implemented yet.\n");
+    PERROR("Not implemented yet.");
 }
 
 void version() {
-    printf("Calendar %s\n", VERSION);
+    PERROR("Not implemented yet.");
 }
 
 void watch() {
-    fprintf(stderr, "Not implemented yet.\n");
+    PERROR("Not implemented yet.");
 }
 
 void import_calendar(char *file) {
-    fprintf(stderr, "Not implemented yet.\n");
+    PERROR("Not implemented yet.");
 }
 
 void export_calendar(char *file) {
-    fprintf(stderr, "Not implemented yet.\n");
+    PERROR("Not implemented yet.");
 }
 
 void alarm_add(Alarm alarm) {
@@ -82,14 +79,14 @@ void alarm_add(Alarm alarm) {
 }
 
 void alarm_edit(Id id, Alarm alarm) {
-    fprintf(stderr, "Not implemented yet.\n");
+    PERROR("Not implemented yet.");
 }
 
 void alarm_list(AlarmFilter filter) {
-    fprintf(stderr, "Not implemented yet.\n");
+    PERROR("Not implemented yet.");
 }
 
 void alarm_remove(Id id) {
-    fprintf(stderr, "Not implemented yet.\n");
+    PERROR("Not implemented yet.");
 }
 

@@ -116,10 +116,10 @@ static int scan_month_day(char *input, uint8_t *output, bool clamp) {
 
 // checks if the day of a specific month exists in all years.
 // all months have predefined days, except for February, which in leap years it has one more day. this is why we need 'clamp'.
-// 'month' is base 0.
+// 'month' is base 1.
 static int scan_specific_month_day(char *input, uint8_t *output, uint8_t month, bool clamp) {
     // we won't consider February with 29 days in leap years, because this checks in all years, and February has at least 28 days.
-    static const uint8_t days_in_month[] = { -1,
+    static const uint8_t days_in_month[] = {
         31, 28, 31, 30, 31, 30,
         31, 31, 30, 31, 30, 31,
     };
@@ -136,12 +136,12 @@ static int scan_specific_month_day(char *input, uint8_t *output, uint8_t month, 
             ERROR("Not all February months have 29 days. Use the '--clamp' flag to clamp the day.");
     }
 
-    else if (*output > days_in_month[month])
+    else if (*output > days_in_month[month - 1]) 
         ERROR("This month doesn't have this amount of days.");
 
     // TODO: change clamp to false in these cases,
     // which requires it to be a pointer instead.
-    if (month == 2 && *output <= 28 && clamp)
+    if (*output <= days_in_month[month - 1] && clamp)
         WARN("Clamping isn't necessary in this case.");
 
     return 0; 
@@ -361,15 +361,15 @@ static int parse_alarm_add(int len, char *args[]) {
 }
 
 static int parse_alarm_edit(int len, char *args[]) {
-
+    ERROR("Not implemented yet.");
 }
 
 static int parse_alarm_list(char *filter) {
-
+    ERROR("Not implemented yet.");
 }
 
 static int remove_alarm(char *id) {
-
+    ERROR("Not implemented yet.");
 }
 
 static int check_description(char *description) {
