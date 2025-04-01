@@ -3,8 +3,10 @@
 
 #include "operations.h"
 #include "calendar.h"
+#include "print.h"
 #include "file.h"
 #include "list.h"
+#include "util.h"
 
 const char *VERSION = "v0.1 Alpha";
 
@@ -34,6 +36,7 @@ void print_now() {
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
     
+    // TODO: reuse existing code
     printf("%s, %d/%02d/%02d %02d:%02d:%02d\n", days_of_the_week[tm.tm_wday], tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 }
 
@@ -61,12 +64,14 @@ void alarm_add(Alarm alarm) {
     AlarmList list;
     if (!parse_file(&list)) return;
 
+    // add an id
+    alarm.id = random_uint32();
     push(&list, alarm);
 
     if (!write_to_file(list)) return;
     free_alarm_list(&list);
 
-    // TODO: pretty print the alarm
+    print_alarm(alarm);
     printf("Alarm added successfully.\n");
 }
 

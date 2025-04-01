@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <time.h>
 
 static FILE *open_file(const char *mode);
 
@@ -70,3 +71,59 @@ static FILE *open_file(const char *mode) {
     return f;
 }
 
+int random_number(int min, int max) {
+    return min + (rand() % max);
+}
+
+uint32_t random_uint32() {
+    return (uint32_t) random_number(0, UINT32_MAX);
+}
+
+bool date_has_passed(Date then, Date now) {
+    // Compare the years first
+    if (now.year > then.year)
+        return true;
+    else if (now.year < then.year)
+        return false;
+
+    // If years are equal, compare the months
+    if (now.month > then.month)
+        return true;
+    else if (now.month < then.month)
+        return false;
+
+    // If months are equal, compare the days
+    if (now.month_day > then.month_day)
+        return true;
+    else if (now.month_day < then.month_day)
+        return false;
+
+    // If days are equal, compare the hours
+    if (now.hour.hours > then.hour.hours)
+        return true;
+    else if (now.hour.hours < then.hour.hours)
+        return false;
+    
+    // If hours are equal, compare the minutes
+    if (now.hour.minutes > then.hour.minutes)
+        return true;
+
+    // If none of the above are greater, the date has not passed
+    return false;
+}
+
+Date now() {
+    Date current;
+
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+
+    current.year = tm_info->tm_year + 1900;
+    current.month = tm_info->tm_mon + 1;
+    current.month_day = tm_info->tm_mday;
+
+    current.hour.hours = tm_info->tm_hour;
+    current.hour.minutes = tm_info->tm_min;
+
+    return current;
+}

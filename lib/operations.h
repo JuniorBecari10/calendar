@@ -59,10 +59,12 @@ typedef struct {
 typedef struct {
     char *description;
     AlarmType type;
+    uint32_t id;
 } Alarm;
 
 typedef uint64_t Id;
 typedef AlarmTypeId AlarmFilter;
+typedef struct AlarmOnce Date;
 
 /* 
  * Args:

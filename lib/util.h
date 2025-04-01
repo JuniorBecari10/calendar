@@ -40,4 +40,10 @@ char *get_file_path();
 FILE *get_file_writer();
 FILE *get_file_reader();
 
+int random_number(int min, int max);
+uint32_t random_uint32();
+
+bool date_has_passed(Date then, Date now);
+Date now();
+
 #endif

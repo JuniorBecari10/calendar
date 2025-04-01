@@ -1,8 +1,10 @@
+#include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <strings.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "lib/calendar.h"
 #include "lib/operations.h"
@@ -24,6 +26,8 @@ static int remove_alarm(char *id);
 static int check_description(char *description);
 
 int main(int argc, char *argv[]) {
+    srand(time(NULL));
+
     if (argc == 1) {
         print_current_month();
         return 0;
@@ -115,7 +119,7 @@ static int scan_month_day(char *input, uint8_t *output, bool clamp) {
 // 'month' is base 0.
 static int scan_specific_month_day(char *input, uint8_t *output, uint8_t month, bool clamp) {
     // we won't consider February with 29 days in leap years, because this checks in all years, and February has at least 28 days.
-    static const uint8_t days_in_month[] = {
+    static const uint8_t days_in_month[] = { -1,
         31, 28, 31, 30, 31, 30,
         31, 31, 30, 31, 30, 31,
     };
@@ -123,12 +127,22 @@ static int scan_specific_month_day(char *input, uint8_t *output, uint8_t month, 
     if (sscanf(input, "%hhd", output) != 1)
         ERROR("Invalid day of the month.");
 
+    if (*output < 1 || *output > 31)
+        ERROR("Day of the month must be between 1 and 31.");
+    
     // check if clamp is necessary for February
-    if (month == 1 && *output > 28 && !clamp)
-        ERROR("Not all February months have 29 days. Use the '--clamp' flag to clamp the day.");
+    if (month == 2 && *output == 29) {
+        if (!clamp)
+            ERROR("Not all February months have 29 days. Use the '--clamp' flag to clamp the day.");
+    }
 
-    if (*output > days_in_month[month])
+    else if (*output > days_in_month[month])
         ERROR("This month doesn't have this amount of days.");
+
+    // TODO: change clamp to false in these cases,
+    // which requires it to be a pointer instead.
+    if (month == 2 && *output <= 28 && clamp)
+        WARN("Clamping isn't necessary in this case.");
 
     return 0; 
 }
@@ -338,6 +352,9 @@ static int parse_alarm_add(int len, char *args[]) {
     }
 
     else ERROR("Usage: add <description> <daily | weekly | monthly | yearly | once>.");
+
+    if (date_has_passed(alarm.type.alarm.once, now()))
+        WARN("This date has already passed, so the alarm for it won't ring.");
 
     alarm_add(alarm);
     return 0;
