@@ -106,6 +106,11 @@ void alarm_add(Alarm alarm) {
     AlarmList list;
     if (!parse_file(&list)) return;
 
+    if (list.len == MAX_LEN) {
+        PERROR("Cannot add more alarms; the limit was exceeded.");
+        return;
+    }
+
     // add an unique id
     alarm.id = random_unique_id(&list);
     push(&list, alarm);

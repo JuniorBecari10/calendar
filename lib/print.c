@@ -21,7 +21,7 @@ void print_alarm(Alarm alarm) {
 
         case ALARM_WEEKLY: {
             struct AlarmWeekly weekly = alarm.type.alarm.weekly;
-            printf("Weekly - All ");
+            printf("Weekly - ");
             print_week_day(weekly.week_day);
 
             printf("s - ");

@@ -78,7 +78,7 @@ int random_number(int min, int max) {
 }
 
 Id random_id() {
-    return random_number(0, MAX_LEN);
+    return random_number(1000, MAX_LEN);
 }
 
 Id random_unique_id(AlarmList *list) {
@@ -88,7 +88,7 @@ Id random_unique_id(AlarmList *list) {
     while (true) {
         changed = false;
         
-        for (Alarm *a = list->list; a - list->list < list->len; a++) {
+        for (Alarm *a = list->list; (size_t) (a - list->list) < list->len; a++) {
             if (a->id == ret) {
                 ret = random_id();
                 changed = true;
