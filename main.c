@@ -53,6 +53,13 @@ int main(int argc, char *argv[]) {
     else if (strcasecmp(option, "export") == 0 && argc == 3)
         export_calendar(argv[2]);
 
+    else if (strcasecmp(option, "list") == 0) {
+        if (argc == 3)
+            parse_alarm_list(argv[2]);
+
+        alarm_list_all();
+    }
+    
     else if (strcasecmp(option, "alarm") == 0 && argc > 2) {
         char *suboption = argv[2];
        
@@ -365,7 +372,23 @@ static int parse_alarm_edit(int len, char *args[]) {
 }
 
 static int parse_alarm_list(char *filter) {
-    ERROR("Not implemented yet.");
+    AlarmFilter filt;
+    
+    if (strcasecmp(filter, "daily") == 0)
+        filt = ALARM_DAILY;
+    else if (strcasecmp(filter, "weekly") == 0)
+        filt = ALARM_WEEKLY;
+    else if (strcasecmp(filter, "monthly") == 0)
+        filt = ALARM_MONTHLY;
+    else if (strcasecmp(filter, "yearly") == 0)
+        filt = ALARM_YEARLY;
+    else if (strcasecmp(filter, "once") == 0)
+        filt = ALARM_ONCE;
+    else
+        ERROR("Invalid filter.");
+
+    alarm_list(filt);
+    return 0;
 }
 
 static int remove_alarm(char *id) {

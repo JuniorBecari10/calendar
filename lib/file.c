@@ -42,7 +42,6 @@ bool parse_file(AlarmList *out_list) {
             PERROR("Parse error: could not parse calendar file.");
             free_alarm_list(out_list);
 
-            printf("after");
             return false;
         }
 
@@ -185,7 +184,7 @@ static bool parse_line(char *line, Alarm *out_alarm) {
         return false; // Invalid number of tokens
 
     *out_alarm = (Alarm) {
-        .description = strdup(desc), // Duplicate string to avoid modification
+        .description = desc,
         .id = alarm_id,
         .type = {
             .id = id,

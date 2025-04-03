@@ -126,8 +126,25 @@ void alarm_edit(Id id, Alarm alarm) {
     PERROR("Not implemented yet.");
 }
 
+void alarm_list_all() {
+    AlarmList list;
+    if (!parse_file(&list)) return;
+    
+    for (Alarm *a = list.list; (size_t) (a - list.list) < list.len; a++)
+        print_alarm(*a);
+
+    free_alarm_list(&list);
+}
 void alarm_list(AlarmFilter filter) {
-    PERROR("Not implemented yet.");
+    AlarmList list;
+    if (!parse_file(&list)) return;
+    
+    for (Alarm *a = list.list; (size_t) (a - list.list) < list.len; a++) {
+        if (a->type.id == filter)
+            print_alarm(*a);
+    }
+
+    free_alarm_list(&list);
 }
 
 void alarm_remove(Id id) {

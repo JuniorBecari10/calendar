@@ -15,7 +15,6 @@ typedef struct {
     uint8_t seconds;
 } HourSeconds;
 
-
 typedef enum {
     ALARM_DAILY,
     ALARM_WEEKLY,
@@ -124,6 +123,7 @@ void export_calendar(char *file);
 void alarm_add(Alarm alarm);
 void alarm_edit(Id id, Alarm alarm);
 
+void alarm_list_all();
 void alarm_list(AlarmFilter filter);
 void alarm_remove(Id id);
 
