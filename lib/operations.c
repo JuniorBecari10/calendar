@@ -138,7 +138,7 @@ void alarm_list_all() {
 void alarm_list(AlarmFilter filter) {
     AlarmList list;
     if (!parse_file(&list)) return;
-    
+
     for (Alarm *a = list.list; (size_t) (a - list.list) < list.len; a++) {
         if (a->type.id == filter)
             print_alarm(*a);

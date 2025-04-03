@@ -54,10 +54,10 @@ int main(int argc, char *argv[]) {
         export_calendar(argv[2]);
 
     else if (strcasecmp(option, "list") == 0) {
-        if (argc == 3)
+        if (argc == 3) 
             parse_alarm_list(argv[2]);
-
-        alarm_list_all();
+        else
+            alarm_list_all();
     }
     
     else if (strcasecmp(option, "alarm") == 0 && argc > 2) {
