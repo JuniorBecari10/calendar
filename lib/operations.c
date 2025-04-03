@@ -106,8 +106,8 @@ void alarm_add(Alarm alarm) {
     AlarmList list;
     if (!parse_file(&list)) return;
 
-    // add an id
-    alarm.id = random_uint32();
+    // add an unique id
+    alarm.id = random_unique_id(&list);
     push(&list, alarm);
 
     if (!write_to_file(list)) return;

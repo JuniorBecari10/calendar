@@ -7,6 +7,8 @@
 #define INITIAL_CAP 10
 #define GROW_FACTOR 2
 
+#define MAX_LEN 10000
+
 typedef struct {
     Alarm *list;
     size_t len;

@@ -2,6 +2,7 @@
 #define UTIL_H
 
 #include "operations.h"
+#include "list.h"
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -41,7 +42,9 @@ FILE *get_file_writer();
 FILE *get_file_reader();
 
 int random_number(int min, int max);
-uint32_t random_uint32();
+
+Id random_id();
+Id random_unique_id(AlarmList *list);
 
 bool date_has_passed(Date then, Date now);
 

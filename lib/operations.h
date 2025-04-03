@@ -15,14 +15,6 @@ typedef struct {
     uint8_t seconds;
 } HourSeconds;
 
-typedef struct {
-    uint32_t year;
-    uint8_t month;
-    uint8_t month_day;
-    uint8_t week_day;
-
-    HourSeconds hour;
-} DateComplete;
 
 typedef enum {
     ALARM_DAILY,
@@ -71,15 +63,24 @@ typedef struct {
     } alarm;
 } AlarmType;
 
+typedef uint16_t Id;
+typedef AlarmTypeId AlarmFilter;
+typedef struct AlarmOnce Date;
+
+typedef struct {
+    uint32_t year;
+    uint8_t month;
+    uint8_t month_day;
+    uint8_t week_day;
+
+    HourSeconds hour;
+} DateComplete;
+
 typedef struct {
     char *description;
     AlarmType type;
-    uint32_t id;
+    Id id;
 } Alarm;
-
-typedef uint64_t Id;
-typedef AlarmTypeId AlarmFilter;
-typedef struct AlarmOnce Date;
 
 /* 
  * Args:

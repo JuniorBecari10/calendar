@@ -1,4 +1,5 @@
 #include "util.h"
+#include "list.h"
 #include "operations.h"
 
 #include <stdlib.h>
@@ -73,11 +74,32 @@ static FILE *open_file(const char *mode) {
 }
 
 int random_number(int min, int max) {
-    return min + (rand() % max);
+    return min + (rand() % (max - min));
 }
 
-uint32_t random_uint32() {
-    return (uint32_t) random_number(0, UINT32_MAX);
+Id random_id() {
+    return random_number(0, MAX_LEN);
+}
+
+Id random_unique_id(AlarmList *list) {
+    Id ret = random_id();
+    bool changed = false;
+
+    while (true) {
+        changed = false;
+        
+        for (Alarm *a = list->list; a - list->list < list->len; a++) {
+            if (a->id == ret) {
+                ret = random_id();
+                changed = true;
+
+                break;
+            }
+        }
+
+        if (!changed)
+            return ret;
+    }
 }
 
 bool date_has_passed(Date then, Date now) {

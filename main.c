@@ -337,6 +337,9 @@ static int parse_alarm_add(int len, char *args[]) {
             scan_hour(args[5], &hour) != 0)
             return 1;
 
+        if (date_has_passed(alarm.type.alarm.once, now()))
+            WARN("This date has already passed, so the alarm for it won't ring.");
+    
         alarm = (Alarm) {
             .description = description,
             .type = (AlarmType) {
@@ -352,9 +355,6 @@ static int parse_alarm_add(int len, char *args[]) {
     }
 
     else ERROR("Usage: add <description> <daily | weekly | monthly | yearly | once>.");
-
-    if (date_has_passed(alarm.type.alarm.once, now()))
-        WARN("This date has already passed, so the alarm for it won't ring.");
 
     alarm_add(alarm);
     return 0;
