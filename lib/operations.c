@@ -52,7 +52,7 @@ void help() {
         "    <year>                - print all months of the specified year\n"
         "    <month> <year>        - print the specified month of the specified year.\n\n"
 
-        "    now                   - show current day of the week, date and time\n"
+        "    now                   - show the current day of the week, date and time\n"
         "    help                  - show this help message\n"
         "    version               - show version information\n"
         "    watch                 - watch mode; required for the alarms to ring\n\n"
@@ -87,7 +87,7 @@ void help() {
 }
 
 void version() {
-    PERROR("Not implemented yet.");
+    printf("Calendar %s.\n", VERSION);
 }
 
 void watch() {
