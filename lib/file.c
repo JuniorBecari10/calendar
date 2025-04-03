@@ -187,7 +187,6 @@ static bool parse_line(char *line, Alarm *out_alarm) {
         (id == ALARM_ONCE    && count != 5))
         return false; // Invalid number of tokens
 
-    printf("h");
     *out_alarm = (Alarm){
         .description = strdup(desc), // Duplicate string to avoid modification
         .id = alarm_id,
