@@ -42,6 +42,7 @@ bool parse_file(AlarmList *out_list) {
             PERROR("Parse error: could not parse calendar file.");
             free_alarm_list(out_list);
 
+            printf("after");
             return false;
         }
 
@@ -162,21 +163,17 @@ static bool parse_line(char *line, Alarm *out_alarm) {
             return false; // Invalid type
     }
 
-    uint8_t count = 1;
+    uint8_t count = 0;
     int32_t values[5] = {0}; // because it may contain 'year'
     
     char *token;
     while ((token = strtok(NULL, SEPARATOR)) != NULL) {
-        if (count > 5)
+        if (count >= 5)
             return false; // Too many tokens
 
-        printf("f");
-        if (sscanf(token, "%d", &values[count - 1]) != 1) {
-            printf("here\n");
+        if (sscanf(token, "%d", &values[count]) != 1)
             return false;
-        }
 
-        printf("g");
         count++;
     }
 
@@ -187,7 +184,7 @@ static bool parse_line(char *line, Alarm *out_alarm) {
         (id == ALARM_ONCE    && count != 5))
         return false; // Invalid number of tokens
 
-    *out_alarm = (Alarm){
+    *out_alarm = (Alarm) {
         .description = strdup(desc), // Duplicate string to avoid modification
         .id = alarm_id,
         .type = {
