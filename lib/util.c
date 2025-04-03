@@ -81,6 +81,7 @@ Id random_id() {
     return random_number(1000, MAX_LEN);
 }
 
+// TODO: make the ID a hash of the alarm, constrained into 4 digits
 Id random_unique_id(AlarmList *list) {
     Id ret = random_id();
     bool changed = false;
