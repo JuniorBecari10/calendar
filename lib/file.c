@@ -119,213 +119,137 @@ bool write_to_file(AlarmList list) {
  *     0 = daily
  *     1 = weekly
  *     2 = monthly
- *     3 = once
+ *     3 = yearly
+ *     4 = once
  * 
  * data:
  *     daily:   hour|minute
  *     weekly:  week_day|hour|minute
- *     monthly: month_day|hour|minute|clamp
- *     yearly:  month_day|month|hour|minute|clamp
+ *     monthly: month_day|clamp|hour|minute
+ *     yearly:  month_day|month|clamp|hour|minute
  *     once:    month_day|month|year|hour|minute
  * 
  * Descriptions must not have the separator character.
  */
 static bool parse_line(char *line, Alarm *out_alarm) {
     char *desc = strtok(line, SEPARATOR);
-    Id alarm_id = atoi(strtok(NULL, SEPARATOR));
+    if (!desc)
+        return false;
+    
+    char *id_str = strtok(NULL, SEPARATOR);
+    if (!id_str)
+        return false;
 
-    AlarmTypeId id = ALARM_DAILY;
-    uint32_t count = 0;
+    Id alarm_id = atoi(id_str);
 
+    char *type_str = strtok(NULL, SEPARATOR);
+    if (!type_str)
+        return false;
+
+    uint8_t parsed_id;
+    if (sscanf(type_str, "%hhd", &parsed_id) != 1)
+        return false;
+
+    AlarmTypeId id;
+    switch (parsed_id) {
+        case 0: id = ALARM_DAILY;   break;
+        case 1: id = ALARM_WEEKLY;  break;
+        case 2: id = ALARM_MONTHLY; break;
+        case 3: id = ALARM_YEARLY;  break;
+        case 4: id = ALARM_ONCE;    break;
+        
+        default:
+            return false; // Invalid type
+    }
+
+    uint8_t count = 1;
+    int32_t values[5] = {0}; // because it may contain 'year'
+    
     char *token;
     while ((token = strtok(NULL, SEPARATOR)) != NULL) {
-        if (count == 0) {
-            uint8_t parsed_id;
-            if (sscanf(token, "%hhd", &parsed_id) != 1)
-                return false;
+        if (count > 5)
+            return false; // Too many tokens
 
-            switch (parsed_id) {
-                case 0: id = ALARM_DAILY;   break;
-                case 1: id = ALARM_WEEKLY;  break;
-                case 2: id = ALARM_MONTHLY; break;
-                case 3: id = ALARM_ONCE;    break;
-            }
+        printf("f");
+        if (sscanf(token, "%d", &values[count - 1]) != 1) {
+            printf("here\n");
+            return false;
         }
 
-        else {
-            switch (id) {
-                case ALARM_DAILY: {
-                    uint8_t hours, minutes;
-
-                    if (count == 1 && sscanf(token, "%hhd", &hours) != 1)
-                        return false;
-                    else if (count == 2 && sscanf(token, "%hhd", &minutes) != 1)
-                        return false;
-                    else if (count >= 3) {
-                        *out_alarm = (Alarm) {
-                            .description = desc,
-                            .id = alarm_id,
-                            .type = (AlarmType) {
-                                .id = id,
-                                .alarm.daily = {
-                                    .hour = (Hour) {
-                                        .hours = hours,
-                                        .minutes = minutes,
-                                    }
-                                }
-                            }
-                        };
-
-                        return true;
-                    }
-
-                    break;
-                }
-
-                case ALARM_WEEKLY: {
-                    uint8_t week_day, hours, minutes;
-
-                    if (count == 1 && sscanf(token, "%hhd", &week_day) != 1)
-                        return false;
-                    else if (count == 2 && sscanf(token, "%hhd", &hours) != 1)
-                        return false;
-                    else if (count == 3 && sscanf(token, "%hhd", &minutes) != 1)
-                        return false;
-                    else if (count >= 3) {
-                        *out_alarm = (Alarm) {
-                            .description = desc,
-                            .id = alarm_id,
-                            .type = (AlarmType) {
-                                .id = id,
-                                .alarm.weekly = {
-                                    .week_day = week_day,
-                                    .hour = (Hour) {
-                                        .hours = hours,
-                                        .minutes = minutes,
-                                    },
-                                }
-                            }
-                        };
-
-                        return true;
-                    }
-
-                    break;
-                }
-
-                case ALARM_MONTHLY: {
-                    uint8_t month_day, hours, minutes, clamp;
-                    
-                    if (count == 1 && sscanf(token, "%hhd", &month_day) != 1)
-                        return false;
-                    else if (count == 2 && sscanf(token, "%hhd", &hours) != 1)
-                        return false;
-                    else if (count == 3 && sscanf(token, "%hhd", &minutes) != 1)
-                        return false;
-                    else if (count == 4 && sscanf(token, "%hhd", &clamp) != 1)
-                        return false;
-                    else if (count >= 5) {
-                        *out_alarm = (Alarm) {
-                            .description = desc,
-                            .id = alarm_id,
-                            .type = (AlarmType) {
-                                .id = id,
-                                .alarm.monthly = {
-                                    .month_day = month_day,
-                                    .hour = (Hour) {
-                                        .hours = hours,
-                                        .minutes = minutes,
-                                    },
-                                    .clamp = clamp,
-                                }
-                            }
-                        };
-
-                        return true;
-                    }
-
-                    break;
-                }
-
-                case ALARM_YEARLY: {
-                    uint8_t month_day, month, hours, minutes, clamp;
-                    
-                    if (count == 1 && sscanf(token, "%hhd", &month_day) != 1)
-                        return false;
-                    else if (count == 2 && sscanf(token, "%hhd", &month) != 1)
-                        return false;
-                    else if (count == 3 && sscanf(token, "%hhd", &hours) != 1)
-                        return false;
-                    else if (count == 4 && sscanf(token, "%hhd", &minutes) != 1)
-                        return false;
-                    else if (count == 5 && sscanf(token, "%hhd", &clamp) != 1)
-                        return false;
-                    else if (count >= 6) {
-                        *out_alarm = (Alarm) {
-                            .description = desc,
-                            .id = alarm_id,
-                            .type = (AlarmType) {
-                                .id = id,
-                                .alarm.yearly = {
-                                    .month_day = month_day,
-                                    .month = month,
-                                    .hour = (Hour) {
-                                        .hours = hours,
-                                        .minutes = minutes,
-                                    },
-                                    .clamp = clamp,
-                                }
-                            }
-                        };
-
-                        return true;
-                    }
-
-                    break;
-                }
-
-                case ALARM_ONCE: {
-                    uint8_t month_day, month, hours, minutes;
-                    uint32_t year;
-                    
-                    if (count == 1 && sscanf(token, "%hhd", &month_day) != 1)
-                        return false;
-                    else if (count == 2 && sscanf(token, "%hhd", &month) != 1)
-                        return false;
-                    else if (count == 3 && sscanf(token, "%d", &year) != 1)
-                        return false;
-                    else if (count == 4 && sscanf(token, "%hhd", &hours) != 1)
-                        return false;
-                    else if (count == 5 && sscanf(token, "%hhd", &minutes) != 1)
-                        return false;
-                    else if (count >= 6) {
-                        *out_alarm = (Alarm) {
-                            .description = desc,
-                            .id = alarm_id,
-                            .type = (AlarmType) {
-                                .id = id,
-                                .alarm.yearly = {
-                                    .month_day = month_day,
-                                    .month = month,
-                                    .hour = (Hour) {
-                                        .hours = hours,
-                                        .minutes = minutes,
-                                    },
-                                }
-                            }
-                        };
-
-                        return true;
-                    }
-
-                    break;
-                }
-            }
-        }
-
+        printf("g");
         count++;
     }
 
+    if ((id == ALARM_DAILY   && count != 2) ||
+        (id == ALARM_WEEKLY  && count != 3) ||
+        (id == ALARM_MONTHLY && count != 4) ||
+        (id == ALARM_YEARLY  && count != 5) ||
+        (id == ALARM_ONCE    && count != 5))
+        return false; // Invalid number of tokens
+
+    printf("h");
+    *out_alarm = (Alarm){
+        .description = strdup(desc), // Duplicate string to avoid modification
+        .id = alarm_id,
+        .type = {
+            .id = id,
+        },
+    };
+
+    #define HOUR(h, m) (Hour) { .hours = (uint8_t) h, .minutes = (uint8_t) m, }
+
+    switch (id) {
+        case ALARM_DAILY: {
+            out_alarm->type.alarm.daily = (struct AlarmDaily) {
+                .hour = HOUR(values[0], values[1]),
+            };
+
+            break;
+        }
+
+        case ALARM_WEEKLY: {
+            out_alarm->type.alarm.weekly = (struct AlarmWeekly) {
+                .week_day = (uint8_t) values[0],
+                .hour = HOUR(values[1], values[2]),
+            };
+
+            break;
+        }
+
+        case ALARM_MONTHLY: {
+            out_alarm->type.alarm.monthly = (struct AlarmMonthly) {
+                .month_day = (uint8_t) values[0],
+                .clamp = (bool) values[1],
+                .hour = HOUR(values[2], values[3]),
+            };
+
+            break;
+        }
+
+        case ALARM_YEARLY: {
+            out_alarm->type.alarm.yearly = (struct AlarmYearly) {
+                .month_day = (uint8_t) values[0],
+                .month = (uint8_t) values[1],
+                .clamp = (bool) values[2],
+                .hour = HOUR(values[3], values[4]),
+            };
+
+            break;
+        }
+
+        case ALARM_ONCE: {
+            out_alarm->type.alarm.once = (struct AlarmOnce) {
+                .month_day = (uint8_t) values[0],
+                .month = (uint8_t) values[1],
+                .year = values[2],
+                .hour = HOUR(values[3], values[4]),
+            };
+
+            break;
+        }
+    }
+
+    #undef HOUR
     return true;
 }
 
