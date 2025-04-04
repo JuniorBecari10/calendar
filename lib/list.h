@@ -9,6 +9,8 @@
 
 #define MAX_LEN 10000
 
+#define LIST_ITER(a, llist) for (Alarm *a = llist.list; (size_t) (a - llist.list) < llist.len; a++)
+
 typedef struct {
     Alarm *list;
     size_t len;

@@ -109,6 +109,8 @@ void alarm_add(Alarm alarm) {
 
     if (list.len == MAX_LEN) {
         PERROR("Cannot add more alarms; the limit was exceeded.");
+        
+        free_alarm_list(&list);
         return;
     }
 
@@ -116,15 +118,37 @@ void alarm_add(Alarm alarm) {
     alarm.id = random_unique_id(&list);
     push_alarm(&list, alarm);
 
-    if (!write_to_file(list)) return;
-    free_alarm_list(&list);
+    if (!write_to_file(list)) {
+        free_alarm_list(&list);
+        return;
+    }
 
     print_alarm(alarm);
     printf("Alarm added successfully.\n");
+    
+    free_alarm_list(&list);
 }
 
 void alarm_edit(Id id, Alarm alarm) {
-    PERROR("Not implemented yet.");
+    AlarmList list;
+    if (!parse_file(&list)) return;
+    
+    LIST_ITER(a, list) {
+        if (a->id == id) {
+            alarm.id = a->id;
+            *a = alarm;
+
+            print_alarm(alarm);
+            printf("Alarm edited successfully.\n");
+
+            write_to_file(list); // error handling is redundant here because either way we will free the list and return
+            free_alarm_list(&list);
+            return;
+        }
+    }
+
+    PERROR("There is no alarm with this ID.");
+    free_alarm_list(&list);
 }
 
 void alarm_list_all() {
@@ -138,7 +162,7 @@ void alarm_list_all() {
         return;
     }
     
-    for (Alarm *a = list.list; (size_t) (a - list.list) < list.len; a++)
+    LIST_ITER(a, list) 
         print_alarm(*a);
 
     free_alarm_list(&list);
@@ -155,7 +179,7 @@ void alarm_list(AlarmFilter filter) {
     }
 
     bool printed = false;
-    for (Alarm *a = list.list; (size_t) (a - list.list) < list.len; a++) {
+    LIST_ITER(a, list) {
         if (a->type.id == filter) {
             print_alarm(*a);
             printed = true;
@@ -175,7 +199,7 @@ void alarm_remove(Id id) {
     size_t index = 0;
     bool found = false;
 
-    for (Alarm *a = list.list; (size_t) (a - list.list) < list.len; a++) {
+    LIST_ITER(a, list) {
         if (a->id == id) {
             found = true;
             break;
@@ -184,13 +208,19 @@ void alarm_remove(Id id) {
         index++;
     }
 
-    if (!found)
-        ERRORR("There's no alarm with this ID.");
+    if (!found) {
+        PERROR("There's no alarm with this ID.");
+        
+        free_alarm_list(&list);
+        return;
+    }
 
     remove_alarm(&list, index);
     
-    if (!write_to_file(list))
+    if (!write_to_file(list)) {
+        free_alarm_list(&list);
         return;
+    }
     
     free_alarm_list(&list);
 }

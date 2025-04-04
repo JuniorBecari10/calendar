@@ -17,6 +17,9 @@ static int scan_month(char *input, uint8_t *output);
 static int scan_year(char *input, int32_t *output);
 static int scan_hour(char *input, Hour *output);
 static int scan_week_day(char *input, uint8_t *output);
+static int scan_id(char* input, Id *output);
+
+static int parse_alarm(int len, char *args[], Alarm *out);
 
 static int parse_alarm_add(int len, char *args[]);
 static int parse_alarm_edit(int len, char *args[]);
@@ -220,17 +223,28 @@ static int scan_week_day(char *input, uint8_t *output) {
     return 0;
 }
 
-static int parse_alarm_add(int len, char *args[]) {
+static int scan_id(char* input, Id *output) {
+    if (sscanf(input, "%hd", output) != 1)
+        ERROR("Invalid ID.");
+
+    return 0;
+}
+
+static int parse_alarm(int len, char *args[], Alarm *out) {
+    if (len == 0)
+        ERROR("Usage: <description> <daily | weekly | monthly | yearly | once>.");
+
     char *description = args[0]; // guaranteed
     
     if (check_description(description) != 0)
         return 1;
+
+    out->description = description;
     
     if (len <= 1)
         ERROR("Please specify the frequency.");
     
     char *freq = args[1];
-    Alarm alarm;
 
     if (strcasecmp(freq, "daily") == 0) {
         if (len < 3)
@@ -240,13 +254,10 @@ static int parse_alarm_add(int len, char *args[]) {
         if (scan_hour(args[2], &hour) != 0)
             return 1;
 
-        alarm = (Alarm) {
-            .description = description,
-            .type = (AlarmType) {
-                .id = ALARM_DAILY,
-                .alarm.daily = {
-                    .hour = hour,
-                },
+        out->type = (AlarmType) {
+            .id = ALARM_DAILY,
+            .alarm.daily = {
+                .hour = hour,
             },
         };
     }
@@ -261,14 +272,11 @@ static int parse_alarm_add(int len, char *args[]) {
         if (scan_week_day(args[2], &week_day) != 0 || scan_hour(args[3], &hour) != 0)
             return 1;
 
-        alarm = (Alarm) {
-            .description = description,
-            .type = (AlarmType) {
-                .id = ALARM_WEEKLY,
-                .alarm.weekly = {
-                    .week_day = week_day,
-                    .hour = hour,
-                },
+        out->type = (AlarmType) {
+            .id = ALARM_WEEKLY,
+            .alarm.weekly = {
+                .week_day = week_day,
+                .hour = hour,
             },
         };
     }
@@ -287,15 +295,12 @@ static int parse_alarm_add(int len, char *args[]) {
         if (scan_month_day(args[2], &month_day, clamp) != 0 || scan_hour(args[3], &hour) != 0)
             return 1;
 
-        alarm = (Alarm) {
-            .description = description,
-            .type = (AlarmType) {
-                .id = ALARM_MONTHLY,
-                .alarm.monthly = {
-                    .month_day = month_day,
-                    .hour = hour,
-                    .clamp = clamp,
-                },
+        out->type = (AlarmType) {
+            .id = ALARM_MONTHLY,
+            .alarm.monthly = {
+                .month_day = month_day,
+                .hour = hour,
+                .clamp = clamp,
             },
         };
     }
@@ -316,16 +321,13 @@ static int parse_alarm_add(int len, char *args[]) {
             scan_hour(args[4], &hour) != 0)
             return 1;
 
-        alarm = (Alarm) {
-            .description = description,
-            .type = (AlarmType) {
-                .id = ALARM_YEARLY,
-                .alarm.yearly = {
-                    .month = month,
-                    .month_day = month_day,
-                    .hour = hour,
-                    .clamp = clamp,
-                },
+        out->type = (AlarmType) {
+            .id = ALARM_YEARLY,
+            .alarm.yearly = {
+                .month = month,
+                .month_day = month_day,
+                .hour = hour,
+                .clamp = clamp,
             },
         };
     }
@@ -344,31 +346,49 @@ static int parse_alarm_add(int len, char *args[]) {
             scan_hour(args[5], &hour) != 0)
             return 1;
 
-        if (date_has_passed(alarm.type.alarm.once, now()))
+        if (date_has_passed(out->type.alarm.once, now()))
             WARN("This date has already passed, so the alarm for it won't ring.");
     
-        alarm = (Alarm) {
-            .description = description,
-            .type = (AlarmType) {
-                .id = ALARM_ONCE,
-                .alarm.once = {
-                    .year = year,
-                    .month = month,
-                    .month_day = month_day,
-                    .hour = hour,
-                },
+        out->type = (AlarmType) {
+            .id = ALARM_ONCE,
+            .alarm.once = {
+                .year = year,
+                .month = month,
+                .month_day = month_day,
+                .hour = hour,
             },
         };
     }
 
-    else ERROR("Usage: add <description> <daily | weekly | monthly | yearly | once>.");
+    else
+        ERROR("Usage: <description> <daily | weekly | monthly | yearly | once>.");
+
+    return 0;
+}
+
+static int parse_alarm_add(int len, char *args[]) {
+    Alarm alarm;
+    if (parse_alarm(len, args, &alarm) != 0)
+        return 1;
 
     alarm_add(alarm);
     return 0;
 }
 
 static int parse_alarm_edit(int len, char *args[]) {
-    ERROR("Not implemented yet.");
+    Id id;
+    if (scan_id(args[0], &id) != 0)
+        return 1;
+
+    args++;
+    len--;
+
+    Alarm alarm;
+    if (parse_alarm(len, args, &alarm) != 0)
+        return 1;
+
+    alarm_edit(id, alarm);
+    return 0;
 }
 
 static int parse_alarm_list(char *filter) {
@@ -393,9 +413,9 @@ static int parse_alarm_list(char *filter) {
 
 static int parse_remove_alarm(char *id) {
     Id out_id;
-    if (sscanf(id, "%hd", &out_id) != 1)
-        ERROR("Invalid ID.");
-
+    if (scan_id(id, &out_id) != 0)
+        return 1;
+    
     alarm_remove(out_id);
     return 0;
 }
@@ -409,3 +429,4 @@ static int check_description(char *description) {
 
     return 0;
 }
+
