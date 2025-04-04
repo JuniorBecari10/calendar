@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
 
 #include "operations.h"
 #include "calendar.h"
@@ -7,7 +9,10 @@
 #include "list.h"
 #include "util.h"
 
+volatile bool requested_close = false;
 const char *VERSION = "v0.1 Alpha";
+
+static void handle_close();
 
 void print_current_month() {
     Date date_now = now();
@@ -91,7 +96,24 @@ void version() {
 }
 
 void watch() {
-    PERROR("Not implemented yet.");
+    signal(SIGINT, handle_close);
+
+    AlarmList list;
+    if (!parse_file(&list)) return;
+
+    for (;;) {
+        CLEAR();
+        printf("Calendar - Watch Mode\n");
+        print_now();
+        printf("Press Ctrl-C to exit.\n\n");
+        
+        if (requested_close) {
+            free_alarm_list(&list);
+            return;
+        }
+
+        sleep(1);
+    }
 }
 
 // TODO: add 'yes' flag
@@ -147,7 +169,7 @@ void alarm_edit(Id id, Alarm alarm) {
         }
     }
 
-    PERROR("There is no alarm with this ID.");
+    PERROR("There's no alarm with this ID.");
     free_alarm_list(&list);
 }
 
@@ -223,5 +245,9 @@ void alarm_remove(Id id) {
     }
     
     free_alarm_list(&list);
+}
+
+static void handle_close() {
+    requested_close = true;
 }
 

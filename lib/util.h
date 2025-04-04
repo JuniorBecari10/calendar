@@ -36,6 +36,8 @@
 #define WARN(message)                            \
     fprintf(stderr, "Warning: " message "\n");
 
+#define CLEAR() printf("\033[H\033[J")
+
 bool is_valid_hour(Hour hour);
 bool month_has_day(uint8_t month, uint8_t day);
 size_t get_index_str(char *arr[], size_t size, char *value);
