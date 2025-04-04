@@ -131,6 +131,13 @@ void alarm_list_all() {
     AlarmList list;
     if (!parse_file(&list)) return;
     
+    if (list.len == 0) {
+        printf("There are no alarms.\n");
+        free_alarm_list(&list);
+        
+        return;
+    }
+    
     for (Alarm *a = list.list; (size_t) (a - list.list) < list.len; a++)
         print_alarm(*a);
 
@@ -140,10 +147,23 @@ void alarm_list(AlarmFilter filter) {
     AlarmList list;
     if (!parse_file(&list)) return;
 
-    for (Alarm *a = list.list; (size_t) (a - list.list) < list.len; a++) {
-        if (a->type.id == filter)
-            print_alarm(*a);
+    if (list.len == 0) {
+        printf("There are no alarms.\n");
+        free_alarm_list(&list);
+        
+        return;
     }
+
+    bool printed = false;
+    for (Alarm *a = list.list; (size_t) (a - list.list) < list.len; a++) {
+        if (a->type.id == filter) {
+            print_alarm(*a);
+            printed = true;
+        }
+    }
+
+    if (!printed)
+        printf("There are no alarms that satisfy this filter.\n");
 
     free_alarm_list(&list);
 }

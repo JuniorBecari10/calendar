@@ -45,7 +45,7 @@ bool parse_file(AlarmList *out_list) {
             return false;
         }
 
-        push(out_list, alarm);
+        push_alarm(out_list, alarm);
     }
 
     fclose(file);
