@@ -135,6 +135,7 @@ void watch() {
                 RING_CASE(ONCE, once)
             }
 
+            // TODO: add more alarms to this list, if any
             if (ring) {
                 printf("Ringing now:\n\a");
                 print_alarm(*a);

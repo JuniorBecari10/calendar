@@ -176,7 +176,7 @@ DateComplete now_complete() {
         .year = tm_info->tm_year + 1900,
         .month = tm_info->tm_mon + 1,
         .month_day = tm_info->tm_mday,
-        .week_day = tm_info->tm_wday,
+        .week_day = tm_info->tm_wday + 1,
 
         .hour = (HourSeconds) {
             .hours = tm_info->tm_hour,
