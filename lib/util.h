@@ -55,6 +55,10 @@ Id random_id();
 Id random_unique_id(AlarmList *list);
 
 bool date_has_passed(Date then, Date now);
+bool hour_has_passed(Hour then, Hour now);
+
+Hour hour_seconds_to_hour(HourSeconds hour);
+bool hours_equal(Hour a, Hour b);
 
 Date now();
 DateComplete now_complete();

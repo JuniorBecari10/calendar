@@ -13,6 +13,7 @@ volatile bool requested_close = false;
 const char *VERSION = "v0.1 Alpha";
 
 static void handle_close();
+static AlarmList get_alarms_to_ring_today(AlarmList list);
 
 void print_current_month() {
     Date date_now = now();
@@ -102,13 +103,66 @@ void watch() {
     if (!parse_file(&list)) return;
 
     for (;;) {
-        CLEAR();
-        printf("Calendar - Watch Mode\n");
-        print_now();
-        printf("Press Ctrl-C to exit.\n\n");
+        DateComplete now = now_complete();
+        AlarmList ring_today = get_alarms_to_ring_today(list);
         
+        CLEAR();
+
+        printf("Calendar - Watch Mode\n");
+        print_now(); // TODO: maybe use cached version of now?
+        printf("Press Ctrl-C to exit.\n\n");
+
+        LIST_ITER(a, ring_today) {
+            // just check the hour.
+            
+            #define RING ring = true; break
+            #define RING_CASE(name, field)                                                       \
+                case ALARM_##name: {                                                             \
+                    if (hours_equal(hour_seconds_to_hour(now.hour), a->type.alarm.field.hour)) { \
+                        RING;                                                                    \
+                    }                                                                            \
+                                                                                                 \
+                    break;                                                                       \
+                }
+
+            bool ring = false;
+            
+            switch (a->type.id) {
+                RING_CASE(DAILY, daily)
+                RING_CASE(WEEKLY, weekly)
+                RING_CASE(MONTHLY, monthly)
+                RING_CASE(YEARLY, yearly)
+                RING_CASE(ONCE, once)
+            }
+
+            if (ring) {
+                printf("Ringing now:\n\a");
+                print_alarm(*a);
+
+                printf("\n");
+                break;
+            }
+
+            #undef RING
+            #undef RING_CASE
+        }
+
+        if (list.len == 0)
+            printf("There are no alarms.\n");
+        else if (ring_today.len == 0)
+            printf("There are no alarms to ring today.\n");
+        else {
+            printf("Alarms to ring today:\n");
+            
+            LIST_ITER(a, ring_today) {
+                print_alarm(*a);
+            }
+        }
+
         if (requested_close) {
             free_alarm_list(&list);
+            free_alarm_list(&ring_today);
+
             return;
         }
 
@@ -125,6 +179,7 @@ void export_calendar(char *file) {
     PERROR("Not implemented yet.");
 }
 
+// TODO: don't allow duplicates (alarms with the same frequency, date and time)
 void alarm_add(Alarm alarm) {
     AlarmList list;
     if (!parse_file(&list)) return;
@@ -249,5 +304,71 @@ void alarm_remove(Id id) {
 
 static void handle_close() {
     requested_close = true;
+}
+
+/*
+ * Will ring today if the hour has not passed, and:
+ *
+ * - the alarm has a daily frequency;
+ * - the alarm has a weekly frequency and today's day of the week matches with it;
+ * - the alarm has a monthly frequency and today's day of the month matches with it;
+ * - the alarm has a yearly frequency and today's month and day of the month matches with it;
+ * - the alarm has a once frequency and today is the specified day.
+ */
+static AlarmList get_alarms_to_ring_today(AlarmList list) {
+    AlarmList res = new_alarm_list();
+    DateComplete now = now_complete();
+
+    LIST_ITER(a, list) {
+        switch (a->type.id) {
+            case ALARM_DAILY: {
+                struct AlarmDaily daily = a->type.alarm.daily;
+                if (!hour_has_passed(daily.hour, hour_seconds_to_hour(now.hour)))
+                    push_alarm(&res, *a);
+                break;
+            }
+
+            case ALARM_WEEKLY: {
+                struct AlarmWeekly weekly = a->type.alarm.weekly;
+                if (weekly.week_day == now.week_day
+                    && !hour_has_passed(weekly.hour, hour_seconds_to_hour(now.hour)))
+                    push_alarm(&res, *a);
+
+                break;
+            }
+
+            case ALARM_MONTHLY: {
+                struct AlarmMonthly monthly = a->type.alarm.monthly;
+                if (monthly.month_day == now.month_day
+                    && !hour_has_passed(monthly.hour, hour_seconds_to_hour(now.hour)))
+                    push_alarm(&res, *a);
+
+                break;
+            }
+            
+            case ALARM_YEARLY: {
+                struct AlarmYearly yearly = a->type.alarm.yearly;
+                if (yearly.month == now.month
+                    && yearly.month_day == now.month_day
+                    && !hour_has_passed(yearly.hour, hour_seconds_to_hour(now.hour)))
+                    push_alarm(&res, *a);
+                
+                break;
+            }
+            
+            case ALARM_ONCE: {
+                struct AlarmOnce once = a->type.alarm.once;
+                if (once.month_day == now.month_day
+                    && once.month == now.month
+                    && once.year == now.year
+                    && !hour_has_passed(once.hour, hour_seconds_to_hour(now.hour)))
+                    push_alarm(&res, *a);
+
+                break;
+            }
+        }
+    }
+
+    return res;
 }
 

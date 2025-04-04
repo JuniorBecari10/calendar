@@ -122,18 +122,29 @@ bool date_has_passed(Date then, Date now) {
     else if (now.month_day < then.month_day)
         return false;
 
-    // If days are equal, compare the hours
-    if (now.hour.hours > then.hour.hours)
+    // Check the hours.
+    return hour_has_passed(then.hour, now.hour);
+}
+
+bool hour_has_passed(Hour then, Hour now) {
+    if (now.hours > then.hours)
         return true;
-    else if (now.hour.hours < then.hour.hours)
+    else if (now.hours < then.hours)
         return false;
     
     // If hours are equal, compare the minutes
-    if (now.hour.minutes > then.hour.minutes)
+    if (now.minutes > then.minutes)
         return true;
 
-    // If none of the above are greater, the date has not passed
+    // If none of the above are greater, the hour has not passed
     return false;
+}
+
+Hour hour_seconds_to_hour(HourSeconds hour) {
+    return (Hour) {
+        .hours = hour.hours,
+        .minutes = hour.minutes,
+    };
 }
 
 Date now() {
@@ -150,6 +161,11 @@ Date now() {
             .minutes = tm_info->tm_min,
         },
     };
+}
+
+bool hours_equal(Hour a, Hour b) {
+    return a.hours == b.hours
+        && a.minutes == b.minutes;
 }
 
 DateComplete now_complete() {
