@@ -18,7 +18,8 @@ typedef struct {
 AlarmList new_alarm_list();
 void free_alarm_list(AlarmList *l);
 
-void push(AlarmList *l, Alarm alarm);
+void push_alarm(AlarmList *l, Alarm alarm);
+void remove_alarm(AlarmList *l, size_t index);
 
 #endif
 

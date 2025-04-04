@@ -21,7 +21,7 @@ static int scan_week_day(char *input, uint8_t *output);
 static int parse_alarm_add(int len, char *args[]);
 static int parse_alarm_edit(int len, char *args[]);
 static int parse_alarm_list(char *filter);
-static int remove_alarm(char *id);
+static int parse_remove_alarm(char *id);
 
 static int check_description(char *description);
 
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
             parse_alarm_list(argv[0]);
         
         else if (strcasecmp(suboption, "remove") == 0 && argc == 1)
-            remove_alarm(argv[0]);
+            parse_remove_alarm(argv[0]);
         
         else
             ERROR("Invalid alarm option or incorrect number of arguments.");
@@ -391,8 +391,13 @@ static int parse_alarm_list(char *filter) {
     return 0;
 }
 
-static int remove_alarm(char *id) {
-    ERROR("Not implemented yet.");
+static int parse_remove_alarm(char *id) {
+    Id out_id;
+    if (sscanf(id, "%hd", &out_id) != 1)
+        ERROR("Invalid ID.");
+
+    alarm_remove(out_id);
+    return 0;
 }
 
 static int check_description(char *description) {

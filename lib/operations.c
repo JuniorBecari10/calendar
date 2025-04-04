@@ -94,6 +94,7 @@ void watch() {
     PERROR("Not implemented yet.");
 }
 
+// TODO: add 'yes' flag
 void import_calendar(char *file) {
     PERROR("Not implemented yet.");
 }
@@ -113,7 +114,7 @@ void alarm_add(Alarm alarm) {
 
     // add an unique id
     alarm.id = random_unique_id(&list);
-    push(&list, alarm);
+    push_alarm(&list, alarm);
 
     if (!write_to_file(list)) return;
     free_alarm_list(&list);
@@ -148,6 +149,29 @@ void alarm_list(AlarmFilter filter) {
 }
 
 void alarm_remove(Id id) {
-    PERROR("Not implemented yet.");
+    AlarmList list;
+    if (!parse_file(&list)) return;
+    
+    size_t index = 0;
+    bool found = false;
+
+    for (Alarm *a = list.list; (size_t) (a - list.list) < list.len; a++) {
+        if (a->id == id) {
+            found = true;
+            break;
+        }
+
+        index++;
+    }
+
+    if (!found)
+        ERRORR("There's no alarm with this ID.");
+
+    remove_alarm(&list, index);
+    
+    if (!write_to_file(list))
+        return;
+    
+    free_alarm_list(&list);
 }
 

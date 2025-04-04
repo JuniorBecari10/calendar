@@ -22,6 +22,12 @@
         return 1;                                \
     } while (0)
 
+#define ERRORR(message)                          \
+    do {                                         \
+        fprintf(stderr, "Error: " message "\n"); \
+        return;                                  \
+    } while (0)
+
 #define PERROR(message)                          \
     do {                                         \
         fprintf(stderr, "Error: " message "\n"); \
