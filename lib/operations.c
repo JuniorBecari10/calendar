@@ -51,7 +51,7 @@ void print_now() {
 
 void help() {
     printf(
-        "Calendar CLI\n\n"
+        "Calendar\n\n"
 
         "Commands:\n"
         "    (no args)             - show current month\n"
@@ -63,7 +63,7 @@ void help() {
         "    version               - show version information\n"
         "    watch                 - watch mode; required for the alarms to ring\n\n"
 
-        "    import <file> [-y]    - import calendar from the specified file. this operation discards the current calendar file.\n"
+        "    import <file> [-y]    - import calendar from the specified file.\n"
         "    export <file>         - export calendar to the specified file.\n\n"
 
         "    alarm                 - manage alarms\n"
@@ -74,7 +74,7 @@ void help() {
         "            | yearly  <month - 1-12> <day of the month> <hour - hh:mm> [--clamp]\n"
         "            | once    <year> <month - 1-12> <day of the month> <hour - hh:mm>\n\n"
 
-        "        edit <id> <description> - edits an existing alarm\n"
+        "        edit <id> <description> - edit an existing alarm\n"
         "            | daily   <hour - hh:mm>\n"
         "            | weekly  <day of the week - 1-7> <hour - hh:mm>\n"
         "            | monthly <day of the month> <hour - hh:mm> [--clamp]\n"
@@ -87,8 +87,10 @@ void help() {
         "            | monthly\n"
         "            | yearly\n"
         "            | once\n"
-        "            ]             - lists all the alarms acording to the specified filters\n"
-        "       remove <id>        - removes the specified alarm\n"
+        "            ]             - list all the alarms acording to the specified filters\n\n"
+
+        "       remove <id>        - remove the specified alarm\n"
+        "       clear  [-y]        - clear all alarms\n"
     );
 }
 
@@ -148,9 +150,34 @@ void watch() {
     }
 }
 
-// TODO: add 'yes' flag
-void import_calendar(char *file) {
-    PERROR("Not implemented yet.");
+void import_calendar(char *file, bool yes) {
+    if (!yes && !ask_for_confirmation("Do you really want to import this calendar?"))
+        return;
+
+    FILE *new_calendar = fopen(file, "r");
+
+    if (new_calendar == NULL)
+        ERRORR("Cannot read the specified file.");
+
+    AlarmList out = new_alarm_list();
+    if (!parse_file(&out)) {
+        PERROR("The specified file is not a valid calendar file. The original file was not modified.");
+
+        fclose(new_calendar);
+        free_alarm_list(&out);
+        return;
+    }
+
+    // copy the contents
+    FILE *original = get_file_writer();
+
+    char c;
+    while ((c = fgetc(new_calendar)) != EOF)
+        fputc(c, original);
+
+    fclose(original);
+    fclose(new_calendar);
+    free_alarm_list(&out);
 }
 
 void export_calendar(char *file) {
@@ -191,6 +218,8 @@ void alarm_edit(Id id, Alarm alarm) {
     LIST_ITER(a, list) {
         if (a->id == id) {
             alarm.id = a->id;
+            free(a->description);
+
             *a = alarm;
 
             print_alarm(alarm);
@@ -271,12 +300,7 @@ void alarm_remove(Id id) {
     }
 
     remove_alarm(&list, index);
-    
-    if (!write_to_file(list)) {
-        free_alarm_list(&list);
-        return;
-    }
-    
+    write_to_file(list);
     free_alarm_list(&list);
 }
 

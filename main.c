@@ -27,6 +27,8 @@ static int parse_alarm_list(char *filter);
 static int parse_alarm_remove(char *id);
 static int parse_alarm_clear(int len, char *args[]);
 
+static int parse_import(int len, char *args[]);
+
 static int check_description(char *description);
 
 int main(int argc, char *argv[]) {
@@ -52,7 +54,7 @@ int main(int argc, char *argv[]) {
         watch();
     
     else if (strcasecmp(option, "import") == 0 && argc == 3)
-        import_calendar(argv[2]);
+        parse_import(argc, argv);
     
     else if (strcasecmp(option, "export") == 0 && argc == 3)
         export_calendar(argv[2]);
@@ -243,7 +245,7 @@ static int parse_alarm(int len, char *args[], Alarm *out) {
     if (check_description(description) != 0)
         return 1;
 
-    out->description = description;
+    out->description = strdup(description); // heap-allocate it
     
     if (len <= 1)
         ERROR("Please specify the frequency.");
@@ -428,6 +430,14 @@ static int parse_alarm_clear(int len, char *args[]) {
     bool yes = len == 1 && strcasecmp(args[0], "-y") == 0;
     alarm_clear(yes);
 
+    return 0;
+}
+
+static int parse_import(int len, char *args[]) {
+    char *filename = args[2];
+    bool yes = len > 3 && strcasecmp(args[3], "-y") == 0;
+    
+    import_calendar(filename, yes);
     return 0;
 }
 

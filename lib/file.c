@@ -55,7 +55,7 @@ bool parse_file(AlarmList *out_list) {
 bool write_to_file(AlarmList list) {
     FILE *w = get_file_writer();
 
-    for (Alarm *a = list.list; (size_t) (a - list.list) < list.len; a++) {
+    LIST_ITER(a, list) {
         // desc|id|type|
         fprintf(w, "%s|%hd|%hhd|", a->description, a->id, (uint8_t) a->type.id);
 
@@ -184,7 +184,7 @@ static bool parse_line(char *line, Alarm *out_alarm) {
         return false; // Invalid number of tokens
 
     *out_alarm = (Alarm) {
-        .description = desc,
+        .description = strdup(desc),
         .id = alarm_id,
         .type = {
             .id = id,

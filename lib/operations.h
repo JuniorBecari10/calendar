@@ -117,7 +117,7 @@ void help();
 void version();
 void watch();
 
-void import_calendar(char *file);
+void import_calendar(char *file, bool yes);
 void export_calendar(char *file);
 
 void alarm_add(Alarm alarm);

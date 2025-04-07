@@ -170,7 +170,7 @@ bool hours_equal(Hour a, Hour b) {
         && a.minutes == b.minutes;
 }
 
-bool is_last_day_of_the_month(int32_t year, uint8_t month, uint8_t day) {
+bool is_last_day_of_the_month(uint32_t year, uint8_t month, uint8_t day) {
     if (month < 1 || month > 12)
         return false;
 

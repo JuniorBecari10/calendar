@@ -13,6 +13,10 @@ AlarmList new_alarm_list() {
 }
 
 void free_alarm_list(AlarmList *l) {
+    for (Alarm *a = l->list; (size_t) (a - l->list) < l->len; a++) {
+        free(a->description);
+    }
+
     free(l->list);
     *l = new_alarm_list();
 }
@@ -34,7 +38,8 @@ void push_alarm(AlarmList *l, Alarm alarm) {
 void remove_alarm(AlarmList *l, size_t index) {
     if (index >= l->len)
         return; // Invalid index, do nothing
-    
+   
+    free(l->list[index].description);
     for (size_t i = index; i < l->len - 1; i++)
         l->list[i] = l->list[i + 1];
     
