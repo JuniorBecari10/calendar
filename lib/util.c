@@ -1,7 +1,9 @@
 #include "util.h"
 #include "list.h"
 #include "operations.h"
+#include "calendar.h"
 
+#include <ctype.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -168,6 +170,23 @@ bool hours_equal(Hour a, Hour b) {
         && a.minutes == b.minutes;
 }
 
+bool is_last_day_of_the_month(int32_t year, uint8_t month, uint8_t day) {
+    if (month < 1 || month > 12)
+        return false;
+
+    int32_t num_days_of_months[] = { -1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    
+    if (is_leap_year(year))
+        num_days_of_months[2] = 29;
+
+    return day == num_days_of_months[month];
+}
+
+bool ask_for_confirmation(char *prompt) {
+    printf("%s (y/n): ", prompt);
+    return tolower(getc(stdin)) == 'y';
+}
+
 DateComplete now_complete() {
     time_t t = time(NULL);
     struct tm *tm_info = localtime(&t);
@@ -191,8 +210,10 @@ DateComplete now_complete() {
  *
  * - the alarm has a daily frequency;
  * - the alarm has a weekly frequency and today's day of the week matches with it;
- * - the alarm has a monthly frequency and today's day of the month matches with it;
- * - the alarm has a yearly frequency and today's month and day of the month matches with it;
+ * - the alarm has a monthly frequency and today's day of the month matches with it
+ *      (or today is the last day of the month and the day is clamp);
+ * - the alarm has a yearly frequency and today's month and day of the month matches with it
+ *      (or today is the last day of the month and the day is clamp);
  * - the alarm has a once frequency and today is the specified day.
  */
 AlarmList get_alarms_to_ring_today(AlarmList list) {
@@ -219,7 +240,8 @@ AlarmList get_alarms_to_ring_today(AlarmList list) {
 
             case ALARM_MONTHLY: {
                 struct AlarmMonthly monthly = a->type.alarm.monthly;
-                if (monthly.month_day == now.month_day
+                if (((monthly.month_day == now.month_day)
+                    || (monthly.clamp && is_last_day_of_the_month(now.year, now.month, now.month_day)))
                     && !hour_has_passed(monthly.hour, hour_seconds_to_hour(now.hour)))
                     push_alarm(&res, *a);
 
@@ -229,7 +251,8 @@ AlarmList get_alarms_to_ring_today(AlarmList list) {
             case ALARM_YEARLY: {
                 struct AlarmYearly yearly = a->type.alarm.yearly;
                 if (yearly.month == now.month
-                    && yearly.month_day == now.month_day
+                    && ((yearly.month_day == now.month_day) ||
+                        (yearly.clamp && is_last_day_of_the_month(now.year, now.month, now.month_day)))
                     && !hour_has_passed(yearly.hour, hour_seconds_to_hour(now.hour)))
                     push_alarm(&res, *a);
                 

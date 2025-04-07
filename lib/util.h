@@ -59,6 +59,9 @@ bool hour_has_passed(Hour then, Hour now);
 
 Hour hour_seconds_to_hour(HourSeconds hour);
 bool hours_equal(Hour a, Hour b);
+bool is_last_day_of_the_month(int32_t year, uint8_t month, uint8_t day);
+
+bool ask_for_confirmation(char *prompt);
 
 Date now();
 DateComplete now_complete();

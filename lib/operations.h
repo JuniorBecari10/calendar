@@ -126,6 +126,7 @@ void alarm_edit(Id id, Alarm alarm);
 void alarm_list_all();
 void alarm_list(AlarmFilter filter);
 void alarm_remove(Id id);
+void alarm_clear(bool yes);
 
 #endif
 

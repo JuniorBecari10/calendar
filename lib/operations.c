@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
+#include <stdlib.h>
 
 #include "operations.h"
 #include "calendar.h"
@@ -108,7 +109,7 @@ void watch() {
         CLEAR();
 
         printf("Calendar - Watch Mode\n");
-        print_now(); // TODO: maybe use cached version of now?
+        print_now();
         printf("Press Ctrl-C to exit.\n\n");
 
         if (ring_now.len > 0) {
@@ -277,6 +278,18 @@ void alarm_remove(Id id) {
     }
     
     free_alarm_list(&list);
+}
+
+void alarm_clear(bool yes) {
+    if (!yes && !ask_for_confirmation("Do you really want to clear your alarms?"))
+        return;
+
+    char *filename = get_file_path();
+
+    remove(filename);
+    free(filename);
+
+    printf("Cleared all alarms.\n");
 }
 
 static void handle_close() {

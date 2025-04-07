@@ -24,7 +24,8 @@ static int parse_alarm(int len, char *args[], Alarm *out);
 static int parse_alarm_add(int len, char *args[]);
 static int parse_alarm_edit(int len, char *args[]);
 static int parse_alarm_list(char *filter);
-static int parse_remove_alarm(char *id);
+static int parse_alarm_remove(char *id);
+static int parse_alarm_clear(int len, char *args[]);
 
 static int check_description(char *description);
 
@@ -80,7 +81,10 @@ int main(int argc, char *argv[]) {
             parse_alarm_list(argv[0]);
         
         else if (strcasecmp(suboption, "remove") == 0 && argc == 1)
-            parse_remove_alarm(argv[0]);
+            parse_alarm_remove(argv[0]);
+        
+        else if (strcasecmp(suboption, "clear") == 0)
+            parse_alarm_clear(argc, argv);
         
         else
             ERROR("Invalid alarm option or incorrect number of arguments.");
@@ -411,12 +415,19 @@ static int parse_alarm_list(char *filter) {
     return 0;
 }
 
-static int parse_remove_alarm(char *id) {
+static int parse_alarm_remove(char *id) {
     Id out_id;
     if (scan_id(id, &out_id) != 0)
         return 1;
     
     alarm_remove(out_id);
+    return 0;
+}
+
+static int parse_alarm_clear(int len, char *args[]) {
+    bool yes = len == 1 && strcasecmp(args[0], "-y") == 0;
+    alarm_clear(yes);
+
     return 0;
 }
 
