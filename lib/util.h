@@ -63,4 +63,7 @@ bool hours_equal(Hour a, Hour b);
 Date now();
 DateComplete now_complete();
 
+AlarmList get_alarms_to_ring_today(AlarmList list);
+AlarmList get_alarms_to_ring_now(AlarmList list_today);
+
 #endif
