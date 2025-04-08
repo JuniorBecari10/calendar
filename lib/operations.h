@@ -120,7 +120,7 @@ void watch();
 void import_calendar(char *file, bool yes);
 void export_calendar(char *file);
 
-void alarm_add(Alarm alarm);
+void alarm_add(Alarm alarm, bool yes);
 void alarm_edit(Id id, Alarm alarm);
 
 void alarm_list_all();

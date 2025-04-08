@@ -378,7 +378,9 @@ static int parse_alarm_add(int len, char *args[]) {
         return 1;
     }
 
-    alarm_add(alarm);
+    bool yes = strcasecmp(args[len - 1], "-y") == 0;
+
+    alarm_add(alarm, yes);
     return 0;
 }
 

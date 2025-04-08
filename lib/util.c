@@ -170,6 +170,40 @@ bool hours_equal(Hour a, Hour b) {
         && a.minutes == b.minutes;
 }
 
+bool alarm_types_equal(AlarmType* a, AlarmType* b) {
+    if (a->id != b->id) {
+        return false;
+    }
+
+    switch (a->id) {
+        case ALARM_DAILY:
+            return hours_equal(a->alarm.daily.hour, b->alarm.daily.hour);
+
+        case ALARM_WEEKLY:
+            return a->alarm.weekly.week_day == b->alarm.weekly.week_day &&
+                   hours_equal(a->alarm.weekly.hour, b->alarm.weekly.hour);
+
+        case ALARM_MONTHLY:
+            return a->alarm.monthly.month_day == b->alarm.monthly.month_day &&
+                   a->alarm.monthly.clamp == b->alarm.monthly.clamp &&
+                   hours_equal(a->alarm.monthly.hour, b->alarm.monthly.hour);
+
+        case ALARM_YEARLY:
+            return a->alarm.yearly.month == b->alarm.yearly.month &&
+                   a->alarm.yearly.month_day == b->alarm.yearly.month_day &&
+                   a->alarm.yearly.clamp == b->alarm.yearly.clamp &&
+                   hours_equal(a->alarm.yearly.hour, b->alarm.yearly.hour);
+
+        case ALARM_ONCE:
+            return a->alarm.once.year == b->alarm.once.year &&
+                   a->alarm.once.month == b->alarm.once.month &&
+                   a->alarm.once.month_day == b->alarm.once.month_day &&
+                   hours_equal(a->alarm.once.hour, b->alarm.once.hour);
+    }
+
+    return false;
+}
+
 bool is_last_day_of_the_month(uint32_t year, uint8_t month, uint8_t day) {
     if (month < 1 || month > 12)
         return false;

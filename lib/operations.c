@@ -72,7 +72,8 @@ void help() {
         "            | weekly  <day of the week - 1-7> <hour - hh:mm>\n"
         "            | monthly <day of the month> <hour - hh:mm> [--clamp]\n"
         "            | yearly  <month - 1-12> <day of the month> <hour - hh:mm> [--clamp]\n"
-        "            | once    <year> <month - 1-12> <day of the month> <hour - hh:mm>\n\n"
+        "            | once    <year> <month - 1-12> <day of the month> <hour - hh:mm>\n"
+        "                [-y]\n\n"
 
         "        edit <id> <description> - edit an existing alarm\n"
         "            | daily   <hour - hh:mm>\n"
@@ -206,8 +207,7 @@ void export_calendar(char *file) {
     printf("Calendar successfully exported.\n");
 }
 
-// TODO: don't allow duplicates (alarms with the same frequency, date and time)
-void alarm_add(Alarm alarm) {
+void alarm_add(Alarm alarm, bool yes) {
     AlarmList list;
     if (!parse_file(&list)) return;
 
@@ -216,6 +216,20 @@ void alarm_add(Alarm alarm) {
         
         free_alarm_list(&list);
         return;
+    }
+
+    if (!yes) {
+        LIST_ITER(a, list) {
+            if (alarm_types_equal(&a->type, &alarm.type)) {
+                if (!ask_for_confirmation("You already have an alarm with this frequency and hour, do you want to add it anyway?")) {
+                    free_alarm(&alarm);
+                    free_alarm_list(&list);
+                    return;
+                }
+
+                break;
+            }
+        }
     }
 
     // add an unique id
@@ -268,7 +282,7 @@ void alarm_list_all() {
         return;
     }
     
-    LIST_ITER(a, list) 
+    LIST_ITER(a, list)
         print_alarm(*a);
 
     free_alarm_list(&list);
