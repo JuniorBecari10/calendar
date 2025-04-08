@@ -11,7 +11,7 @@
 #include "util.h"
 
 volatile bool requested_close = false;
-const char *VERSION = "v0.1 Alpha";
+const char *VERSION = "v1.0 Beta";
 
 static void handle_close();
 
@@ -111,7 +111,7 @@ void watch() {
         
         CLEAR();
 
-        printf("Calendar - Watch Mode\n");
+        printf("When - Watch Mode\n");
         print_now();
         printf("Press Ctrl-C to exit.\n\n");
 
@@ -325,6 +325,8 @@ void alarm_remove(Id id, bool yes) {
     LIST_ITER(a, list) {
         if (a->id == id) {
             found = true;
+
+            print_alarm(*a);
             break;
         }
 
@@ -342,7 +344,7 @@ void alarm_remove(Id id, bool yes) {
     write_to_file(list);
     free_alarm_list(&list);
 
-    printf("Alarm removed.\n");
+    printf("Alarm removed successfully.\n");
 }
 
 void alarm_clear(bool yes) {
@@ -354,7 +356,7 @@ void alarm_clear(bool yes) {
     remove(filename);
     free(filename);
 
-    printf("Cleared all alarms.\n");
+    printf("Cleared all alarms successfully.\n");
 }
 
 static void handle_close() {

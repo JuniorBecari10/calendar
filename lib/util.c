@@ -274,7 +274,9 @@ AlarmList get_alarms_to_ring_today(AlarmList list) {
             case ALARM_MONTHLY: {
                 struct AlarmMonthly monthly = a->type.alarm.monthly;
                 if (((monthly.month_day == now.month_day)
-                    || (monthly.clamp && is_last_day_of_the_month(now.year, now.month, now.month_day)))
+                    || (monthly.clamp
+                        && monthly.month_day > now.month_day
+                        && is_last_day_of_the_month(now.year, now.month, now.month_day)))
                     && !hour_has_passed(monthly.hour, hour_seconds_to_hour(now.hour)))
                     push_alarm(&res, clone_alarm(a));
 
@@ -285,7 +287,9 @@ AlarmList get_alarms_to_ring_today(AlarmList list) {
                 struct AlarmYearly yearly = a->type.alarm.yearly;
                 if (yearly.month == now.month
                     && ((yearly.month_day == now.month_day) ||
-                        (yearly.clamp && is_last_day_of_the_month(now.year, now.month, now.month_day)))
+                        (yearly.clamp
+                        && yearly.month_day > now.month_day
+                        && is_last_day_of_the_month(now.year, now.month, now.month_day)))
                     && !hour_has_passed(yearly.hour, hour_seconds_to_hour(now.hour)))
                     push_alarm(&res, clone_alarm(a));
                 

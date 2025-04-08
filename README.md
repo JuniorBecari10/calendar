@@ -3,6 +3,17 @@
 When is a simple CLI app for displaying calendars and managing alarms. <br />
 It works offline, and has no dependencies.
 
+## About the project
+
+When was designed to be simple and operated entirely by the terminal.
+
+- It was written in plain C (with the C11 standard);
+- Runs fully offline, and all the data the app uses stays in your computer;
+- The project has no external dependencies;
+- Alarms use the 24-hour format.
+
+The current version is `v1.0 Beta`.
+
 ## How to use
 
 When is very simple to use. If you run `when help`, it will display this message:
@@ -62,7 +73,7 @@ Basically, it is a persistent background process that monitors time and rings al
 
 This is an example of the Watch mode screen:
 ```
-Calendar - Watch Mode
+When - Watch Mode
 Tuesday, April 8, 2025 (2025-04-08) 11:28:37
 Press Ctrl-C to exit.
 
@@ -74,7 +85,7 @@ Have lunch | id: 2428 | Daily - 11:30
 
 When an alarm is ringing, it looks like this:
 ```
-Calendar - Watch Mode
+When - Watch Mode
 Tuesday, April 8, 2025 (2025-04-08) 11:30:02
 Press Ctrl-C to exit.
 
@@ -141,7 +152,6 @@ Su Mo Tu We Th Fr Sa
 (...)
 ```
 
-
 - **Printing a specific month of a specific year**
 ```
 $ when 7 2023
@@ -156,3 +166,94 @@ Su Mo Tu We Th Fr Sa
 23 24 25 26 27 28 29 
 30 31 
 ```
+
+### Managing Alarms
+
+- **Adding a new daily alarm**
+```
+$ when alarm add "Wake up" daily 07:00
+```
+```
+Wake up | id: 4609 | Daily - 07:00
+Alarm added successfully.
+```
+
+- **Adding a new weekly alarm**
+```
+$ when alarm add "Weekly team meeting" weekly 2 08:30
+```
+```
+Weekly team meeting | id: 7045 | Weekly - Mondays - 08:30
+Alarm added successfully.
+```
+
+- **Adding a new monthly alarm**
+```
+$ when alarm add "Pay credit card" monthly 15 10:00
+```
+```
+Pay credit card | id: 7487 | Monthly - 15 - 10:00
+Alarm added successfully.
+```
+
+- **Adding a new monthly alarm with clamp**
+```
+$ when alarm add "Monthly report" monthly 31 09:00 --clamp
+```
+```
+Monthly report | id: 0058 | Monthly - 31 - 09:00 (clamp)
+Alarm added successfully.
+```
+
+- **Adding a new yearly alarm**
+```
+$ when alarm add "My birthday" yearly 12 4 09:00
+```
+```
+My birthday | id: 7911 | Yearly - April 12 (01-08) - 09:00
+Alarm added successfully.
+```
+
+- **Adding a new yearly alarm with clamp**
+```
+$ when alarm add "Leap day" yearly 2 29 12:00 --clamp
+```
+```
+Leap day | id: 6308 | Yearly - February 29 (02-29) - 12:00 (clamp)
+Alarm added successfully.
+```
+
+- **Adding a new once alarm**
+```
+$ when alarm add "Dinner in grandma's house" once 2025 10 3
+```
+```
+Dinner in grandma's house | id: 9454 | Once - October 3, 2025 (2025-10-03) - 19:30
+Alarm added successfully.
+```
+
+## Contributing
+
+This project is open for contributions! If you want to, please open an Issue or a Pull Request. <br />
+Feature requests, bug reports and suggestions are welcome.
+
+## Build from source
+
+If you want to build this project from source, follow these steps:
+
+There's a Makefile in the root folder, that has two targets: `debug` and `release`. <br />
+The default is `debug`, so running `make` will compile the project to this target.
+
+`debug` is for testing purposes, so the optimization level is low, and it compiles with debug symbols. <br />
+`release` is for production, where the optimization level is 3, no debug symbols and a lot of flags.
+
+To compile to the `release` target simply type `make release`. <br />
+The `debug` target also can be compiled explicitly, by running `make debug`.
+
+After compiling, run the program by typing `./when`.
+
+## License
+
+This project is licensed under the GPL 3-Clause License. <br />
+It is defined in `LICENSE`.
+
