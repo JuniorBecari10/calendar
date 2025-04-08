@@ -172,8 +172,13 @@ void import_alarms(char *file, bool yes) {
     // copy the contents
     FILE *original = get_file_writer();
     
-    if (original == NULL)
-        ERRORR("Cannot read alarms file.");
+    if (original == NULL) {
+        PERROR("Cannot read alarms file.");
+
+        fclose(new_calendar);
+        free_alarm_list(&out);
+        return;
+    }
 
     char c;
     while ((c = fgetc(new_calendar)) != EOF)
@@ -194,8 +199,12 @@ void export_alarms(char *file) {
 
     FILE *original = get_file_reader();
     
-    if (original == NULL)
-        ERRORR("Cannot read alarms file.");
+    if (original == NULL) {
+        PERROR("Cannot read alarms file. Maybe it's because you don't have any alarms?");
+        fclose(export);
+
+        return;
+    }
 
     char c;
     while ((c = fgetc(original)) != EOF)

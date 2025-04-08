@@ -97,7 +97,7 @@ bool write_to_file(AlarmList list) {
             case ALARM_ONCE: {
                 struct AlarmOnce once = a->type.alarm.once;
                 
-                fprintf(w, "%hhd|%hhd|%hhd|", once.month_day, once.month, once.year);
+                fprintf(w, "%hhd|%hhd|%d|", once.month_day, once.month, once.year);
                 write_hour(w, once.hour);
 
                 break;

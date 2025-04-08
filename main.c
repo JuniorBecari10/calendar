@@ -351,9 +351,6 @@ static int parse_alarm(int len, char *args[], Alarm *out) {
             scan_hour(args[5], &hour) != 0)
             return 1;
 
-        if (date_has_passed(out->type.alarm.once, now()))
-            WARN("This date has already passed, so the alarm for it won't ring.");
-    
         out->type = (AlarmType) {
             .id = ALARM_ONCE,
             .alarm.once = {
@@ -363,6 +360,9 @@ static int parse_alarm(int len, char *args[], Alarm *out) {
                 .hour = hour,
             },
         };
+        
+        if (date_has_passed(out->type.alarm.once, now()))
+            WARN("This date has already passed, so the alarm for it won't ring.");
     }
 
     else
