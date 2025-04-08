@@ -89,7 +89,7 @@ void help() {
         "            | once\n"
         "            ]             - list all the alarms acording to the specified filters\n\n"
 
-        "       remove <id>        - remove the specified alarm\n"
+        "       remove <id> [-y]   - remove the specified alarm\n"
         "       clear  [-y]        - clear all alarms\n"
     );
 }
@@ -161,7 +161,7 @@ void import_calendar(char *file, bool yes) {
 
     AlarmList out = new_alarm_list();
     if (!parse_file(&out)) {
-        PERROR("The specified file is not a valid calendar file. The original file was not modified.");
+        PERROR("The specified file is not a valid calendar file.\nThe original file was not modified.");
 
         fclose(new_calendar);
         free_alarm_list(&out);
@@ -178,10 +178,26 @@ void import_calendar(char *file, bool yes) {
     fclose(original);
     fclose(new_calendar);
     free_alarm_list(&out);
+
+    printf("Calendar successfully imported.\n");
 }
 
 void export_calendar(char *file) {
-    PERROR("Not implemented yet.");
+    FILE *export = fopen(file, "w");
+
+    if (export == NULL)
+        ERRORR("Cannot write to the specified file.");
+
+    FILE *original = get_file_reader();
+
+    char c;
+    while ((c = fgetc(original)) != EOF)
+        fputc(c, export);
+
+    fclose(original);
+    fclose(export);
+
+    printf("Calendar successfully exported.\n");
 }
 
 // TODO: don't allow duplicates (alarms with the same frequency, date and time)
@@ -276,7 +292,10 @@ void alarm_list(AlarmFilter filter) {
     free_alarm_list(&list);
 }
 
-void alarm_remove(Id id) {
+void alarm_remove(Id id, bool yes) {
+    if (!yes && !ask_for_confirmation("Do you really want to remove this alarm?"))
+        return;
+    
     AlarmList list;
     if (!parse_file(&list)) return;
     
@@ -302,6 +321,8 @@ void alarm_remove(Id id) {
     remove_alarm(&list, index);
     write_to_file(list);
     free_alarm_list(&list);
+
+    printf("Alarm removed.\n");
 }
 
 void alarm_clear(bool yes) {

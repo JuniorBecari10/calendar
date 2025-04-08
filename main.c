@@ -24,7 +24,7 @@ static int parse_alarm(int len, char *args[], Alarm *out);
 static int parse_alarm_add(int len, char *args[]);
 static int parse_alarm_edit(int len, char *args[]);
 static int parse_alarm_list(char *filter);
-static int parse_alarm_remove(char *id);
+static int parse_alarm_remove(int len, char *args[]);
 static int parse_alarm_clear(int len, char *args[]);
 
 static int parse_import(int len, char *args[]);
@@ -53,19 +53,12 @@ int main(int argc, char *argv[]) {
     else if (strcasecmp(option, "watch") == 0)
         watch();
     
-    else if (strcasecmp(option, "import") == 0 && argc == 3)
+    else if (strcasecmp(option, "import") == 0 && argc >= 3)
         parse_import(argc, argv);
     
     else if (strcasecmp(option, "export") == 0 && argc == 3)
         export_calendar(argv[2]);
 
-    else if (strcasecmp(option, "list") == 0) {
-        if (argc == 3) 
-            parse_alarm_list(argv[2]);
-        else
-            alarm_list_all();
-    }
-    
     else if (strcasecmp(option, "alarm") == 0 && argc > 2) {
         char *suboption = argv[2];
        
@@ -79,11 +72,16 @@ int main(int argc, char *argv[]) {
         else if (strcasecmp(suboption, "edit") == 0 && argc >= 1)
             parse_alarm_edit(argc, argv);
         
-        else if (strcasecmp(suboption, "list") == 0 && argc >= 1)
-            parse_alarm_list(argv[0]);
+        else if (strcasecmp(suboption, "list") == 0) {
+            if (argc >= 1) 
+                parse_alarm_list(argv[0]);
+            else
+                alarm_list_all();
+        }
+
         
-        else if (strcasecmp(suboption, "remove") == 0 && argc == 1)
-            parse_alarm_remove(argv[0]);
+        else if (strcasecmp(suboption, "remove") == 0 && argc >= 1)
+            parse_alarm_remove(argc, argv);
         
         else if (strcasecmp(suboption, "clear") == 0)
             parse_alarm_clear(argc, argv);
@@ -374,8 +372,10 @@ static int parse_alarm(int len, char *args[], Alarm *out) {
 
 static int parse_alarm_add(int len, char *args[]) {
     Alarm alarm;
-    if (parse_alarm(len, args, &alarm) != 0)
+    if (parse_alarm(len, args, &alarm) != 0) {
+        free_alarm(&alarm);
         return 1;
+    }
 
     alarm_add(alarm);
     return 0;
@@ -390,8 +390,10 @@ static int parse_alarm_edit(int len, char *args[]) {
     len--;
 
     Alarm alarm;
-    if (parse_alarm(len, args, &alarm) != 0)
+    if (parse_alarm(len, args, &alarm) != 0) {
+        free_alarm(&alarm);
         return 1;
+    }
 
     alarm_edit(id, alarm);
     return 0;
@@ -417,12 +419,14 @@ static int parse_alarm_list(char *filter) {
     return 0;
 }
 
-static int parse_alarm_remove(char *id) {
+static int parse_alarm_remove(int len, char *args[]) {
+    bool yes = len == 2 && strcasecmp(args[1], "-y") == 0;
+
     Id out_id;
-    if (scan_id(id, &out_id) != 0)
+    if (scan_id(args[0], &out_id) != 0)
         return 1;
     
-    alarm_remove(out_id);
+    alarm_remove(out_id, yes);
     return 0;
 }
 

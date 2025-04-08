@@ -300,3 +300,8 @@ AlarmList get_alarms_to_ring_now(AlarmList list_today) {
 
     return ring_now;
 }
+
+void free_alarm(Alarm *alarm) {
+    free(alarm->description);
+}
+

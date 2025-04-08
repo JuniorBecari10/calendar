@@ -69,4 +69,6 @@ DateComplete now_complete();
 AlarmList get_alarms_to_ring_today(AlarmList list);
 AlarmList get_alarms_to_ring_now(AlarmList list_today);
 
+void free_alarm(Alarm *alarm);
+
 #endif
