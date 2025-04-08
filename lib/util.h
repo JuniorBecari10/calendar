@@ -1,12 +1,12 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include "operations.h"
-#include "list.h"
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <stddef.h>
+
+#include "operations.h"
+#include "list.h"
 
 #define SEPARATOR "|"
 #define SEPARATOR_CHAR '|'

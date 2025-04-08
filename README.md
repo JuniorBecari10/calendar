@@ -225,7 +225,7 @@ Alarm added successfully.
 
 - **Adding a new once alarm**
 ```
-$ when alarm add "Dinner in grandma's house" once 2025 10 3
+$ when alarm add "Dinner in grandma's house" once 2025 10 3 19:30
 ```
 ```
 Dinner in grandma's house | id: 9454 | Once - October 3, 2025 (2025-10-03) - 19:30

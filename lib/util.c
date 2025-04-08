@@ -1,8 +1,3 @@
-#include "util.h"
-#include "list.h"
-#include "operations.h"
-#include "calendar.h"
-
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -11,10 +6,12 @@
 #include <stdio.h>
 #include <strings.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <pwd.h>
 #include <time.h>
+
+#include "util.h"
+#include "list.h"
+#include "operations.h"
+#include "calendar.h"
 
 static FILE *open_file(const char *mode);
 
@@ -42,7 +39,7 @@ char *get_file_path() {
     const char *home = getenv("HOME"); // For Unix
     
     if (!home)
-        home = getenv("USERPROFILE"); // Windows fallback
+        home = getenv("USERPROFILE"); // For Windows
     
     size_t path_length = strlen(home) + strlen(FILE_NAME) + 2; // 1 for '/' and 1 for null terminator
     char *file_path = (char *) malloc(path_length);
@@ -105,40 +102,23 @@ Id random_unique_id(AlarmList *list) {
 }
 
 bool date_has_passed(Date then, Date now) {
-    // Compare the years first
-    if (now.year > then.year)
-        return true;
-    else if (now.year < then.year)
-        return false;
+    if (now.year != then.year)
+        return now.year > then.year;
 
-    // If years are equal, compare the months
-    if (now.month > then.month)
-        return true;
-    else if (now.month < then.month)
-        return false;
+    if (now.month != then.month)
+        return now.month > then.month;
 
-    // If months are equal, compare the days
-    if (now.month_day > then.month_day)
-        return true;
-    else if (now.month_day < then.month_day)
-        return false;
+    if (now.month_day != then.month_day)
+        return now.month_day > then.month_day;
 
-    // Check the hours.
     return hour_has_passed(then.hour, now.hour);
 }
 
 bool hour_has_passed(Hour then, Hour now) {
-    if (now.hours > then.hours)
-        return true;
-    else if (now.hours < then.hours)
-        return false;
-    
-    // If hours are equal, compare the minutes
-    if (now.minutes > then.minutes)
-        return true;
+    if (now.hours != then.hours)
+        return now.hours > then.hours;
 
-    // If none of the above are greater, the hour has not passed
-    return false;
+    return now.minutes > then.minutes;
 }
 
 Hour hour_seconds_to_hour(HourSeconds hour) {

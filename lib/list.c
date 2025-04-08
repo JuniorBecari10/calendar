@@ -1,8 +1,8 @@
-#include "list.h"
-#include "operations.h"
-
 #include <stdlib.h>
 #include <stddef.h>
+
+#include "list.h"
+#include "operations.h"
 
 AlarmList new_alarm_list() {
     return (AlarmList) {

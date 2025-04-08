@@ -1,8 +1,8 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include "operations.h"
 #include <stddef.h>
+#include "operations.h"
 
 #define INITIAL_CAP 10
 #define GROW_FACTOR 2

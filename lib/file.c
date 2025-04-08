@@ -1,11 +1,11 @@
-#include "list.h"
-#include "operations.h"
-#include "util.h"
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
+
+#include "list.h"
+#include "operations.h"
+#include "util.h"
 
 #define MAX_LINE 2048
 
