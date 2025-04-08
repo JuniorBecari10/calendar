@@ -7,7 +7,7 @@ static void print_date_iso_no_year(uint8_t month, uint8_t day);
 
 // desc | id | <details>
 void print_alarm(Alarm alarm) {
-    printf("%s | id: %d | ", alarm.description, alarm.id);
+    printf("%s | id: %04u | ", alarm.description, alarm.id);
 
     switch (alarm.type.id) {
         case ALARM_DAILY: {

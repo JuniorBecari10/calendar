@@ -184,7 +184,7 @@ static bool parse_line(char *line, Alarm *out_alarm) {
         return false; // Invalid number of tokens
 
     *out_alarm = (Alarm) {
-        .description = strdup(desc),
+        .description = duplicate_str(desc),
         .id = alarm_id,
         .type = {
             .id = id,

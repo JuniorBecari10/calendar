@@ -244,7 +244,7 @@ static int parse_alarm(int len, char *args[], Alarm *out) {
     if (check_description(description) != 0)
         return 1;
 
-    out->description = strdup(description); // heap-allocate it
+    out->description = duplicate_str(description); // heap-allocate it
     
     if (len <= 1)
         ERROR("Please specify the frequency.");

@@ -7,7 +7,7 @@
 #define INITIAL_CAP 10
 #define GROW_FACTOR 2
 
-#define MAX_LEN 10000
+#define MAX_LEN 9999
 
 #define LIST_ITER(a, llist) for (Alarm *a = llist.list; (size_t) (a - llist.list) < llist.len; a++)
 

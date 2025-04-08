@@ -79,7 +79,7 @@ int random_number(int min, int max) {
 }
 
 Id random_id() {
-    return random_number(1000, MAX_LEN);
+    return random_number(0, MAX_LEN + 1);
 }
 
 // TODO: make the ID a hash of the alarm, constrained into 4 digits
@@ -258,7 +258,7 @@ AlarmList get_alarms_to_ring_today(AlarmList list) {
             case ALARM_DAILY: {
                 struct AlarmDaily daily = a->type.alarm.daily;
                 if (!hour_has_passed(daily.hour, hour_seconds_to_hour(now.hour)))
-                    push_alarm(&res, *a);
+                    push_alarm(&res, clone_alarm(a));
                 break;
             }
 
@@ -266,7 +266,7 @@ AlarmList get_alarms_to_ring_today(AlarmList list) {
                 struct AlarmWeekly weekly = a->type.alarm.weekly;
                 if (weekly.week_day == now.week_day
                     && !hour_has_passed(weekly.hour, hour_seconds_to_hour(now.hour)))
-                    push_alarm(&res, *a);
+                    push_alarm(&res, clone_alarm(a));
 
                 break;
             }
@@ -276,7 +276,7 @@ AlarmList get_alarms_to_ring_today(AlarmList list) {
                 if (((monthly.month_day == now.month_day)
                     || (monthly.clamp && is_last_day_of_the_month(now.year, now.month, now.month_day)))
                     && !hour_has_passed(monthly.hour, hour_seconds_to_hour(now.hour)))
-                    push_alarm(&res, *a);
+                    push_alarm(&res, clone_alarm(a));
 
                 break;
             }
@@ -287,7 +287,7 @@ AlarmList get_alarms_to_ring_today(AlarmList list) {
                     && ((yearly.month_day == now.month_day) ||
                         (yearly.clamp && is_last_day_of_the_month(now.year, now.month, now.month_day)))
                     && !hour_has_passed(yearly.hour, hour_seconds_to_hour(now.hour)))
-                    push_alarm(&res, *a);
+                    push_alarm(&res, clone_alarm(a));
                 
                 break;
             }
@@ -298,7 +298,7 @@ AlarmList get_alarms_to_ring_today(AlarmList list) {
                     && once.month == now.month
                     && once.year == now.year
                     && !hour_has_passed(once.hour, hour_seconds_to_hour(now.hour)))
-                    push_alarm(&res, *a);
+                    push_alarm(&res, clone_alarm(a));
 
                 break;
             }
@@ -317,7 +317,7 @@ AlarmList get_alarms_to_ring_now(AlarmList list_today) {
         #define RING_CASE(name, field)                                                     \
             case ALARM_##name: {                                                           \
                 if (hours_equal(hour_seconds_to_hour(now.hour), a->type.alarm.field.hour)) \
-                    push_alarm(&ring_now, *a);                                             \
+                    push_alarm(&ring_now, clone_alarm(a));                                 \
                                                                                            \
                 break;                                                                     \
             }
@@ -334,7 +334,21 @@ AlarmList get_alarms_to_ring_now(AlarmList list_today) {
     return ring_now;
 }
 
+Alarm clone_alarm(Alarm *alarm) {
+    Alarm clone = *alarm;
+    clone.description = duplicate_str(alarm->description);
+
+    return clone;
+}
+
 void free_alarm(Alarm *alarm) {
     free(alarm->description);
+}
+
+char *duplicate_str(char *str) {
+    size_t len = strlen(str) + 1;
+    char* copy = malloc(len);
+
+    return copy ? memcpy(copy, str, len) : NULL;
 }
 

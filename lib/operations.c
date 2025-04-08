@@ -211,7 +211,7 @@ void alarm_add(Alarm alarm, bool yes) {
     AlarmList list;
     if (!parse_file(&list)) return;
 
-    if (list.len == MAX_LEN) {
+    if (list.len > MAX_LEN) {
         PERROR("Cannot add more alarms; the limit was exceeded.");
         
         free_alarm_list(&list);
