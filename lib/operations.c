@@ -170,6 +170,9 @@ void import_calendar(char *file, bool yes) {
 
     // copy the contents
     FILE *original = get_file_writer();
+    
+    if (original == NULL)
+        ERRORR("Cannot read calendar file.");
 
     char c;
     while ((c = fgetc(new_calendar)) != EOF)
@@ -189,6 +192,9 @@ void export_calendar(char *file) {
         ERRORR("Cannot write to the specified file.");
 
     FILE *original = get_file_reader();
+    
+    if (original == NULL)
+        ERRORR("Cannot read calendar file.");
 
     char c;
     while ((c = fgetc(original)) != EOF)
@@ -234,8 +240,8 @@ void alarm_edit(Id id, Alarm alarm) {
     LIST_ITER(a, list) {
         if (a->id == id) {
             alarm.id = a->id;
-            free(a->description);
-
+            
+            free_alarm(a);
             *a = alarm;
 
             print_alarm(alarm);

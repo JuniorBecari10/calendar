@@ -234,6 +234,7 @@ static int scan_id(char* input, Id *output) {
     return 0;
 }
 
+// it's not this function's responsibility to free 'out'
 static int parse_alarm(int len, char *args[], Alarm *out) {
     if (len == 0)
         ERROR("Usage: <description> <daily | weekly | monthly | yearly | once>.");
