@@ -151,8 +151,8 @@ void watch() {
     }
 }
 
-void import_calendar(char *file, bool yes) {
-    if (!yes && !ask_for_confirmation("Do you really want to import this calendar?"))
+void import_alarms(char *file, bool yes) {
+    if (!yes && !ask_for_confirmation("Do you really want to import this alarms file?"))
         return;
 
     FILE *new_calendar = fopen(file, "r");
@@ -162,7 +162,7 @@ void import_calendar(char *file, bool yes) {
 
     AlarmList out = new_alarm_list();
     if (!parse_file(&out)) {
-        PERROR("The specified file is not a valid calendar file.\nThe original file was not modified.");
+        PERROR("The specified file is not a valid alarms file.\nThe original file was not modified.");
 
         fclose(new_calendar);
         free_alarm_list(&out);
@@ -173,7 +173,7 @@ void import_calendar(char *file, bool yes) {
     FILE *original = get_file_writer();
     
     if (original == NULL)
-        ERRORR("Cannot read calendar file.");
+        ERRORR("Cannot read alarms file.");
 
     char c;
     while ((c = fgetc(new_calendar)) != EOF)
@@ -183,10 +183,10 @@ void import_calendar(char *file, bool yes) {
     fclose(new_calendar);
     free_alarm_list(&out);
 
-    printf("Calendar successfully imported.\n");
+    printf("Alarms file successfully imported.\n");
 }
 
-void export_calendar(char *file) {
+void export_alarms(char *file) {
     FILE *export = fopen(file, "w");
 
     if (export == NULL)
@@ -195,7 +195,7 @@ void export_calendar(char *file) {
     FILE *original = get_file_reader();
     
     if (original == NULL)
-        ERRORR("Cannot read calendar file.");
+        ERRORR("Cannot read alarms file.");
 
     char c;
     while ((c = fgetc(original)) != EOF)
@@ -204,7 +204,7 @@ void export_calendar(char *file) {
     fclose(original);
     fclose(export);
 
-    printf("Calendar successfully exported.\n");
+    printf("Alarms file successfully exported.\n");
 }
 
 void alarm_add(Alarm alarm, bool yes) {

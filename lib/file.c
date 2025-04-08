@@ -147,7 +147,7 @@ static bool parse_line(char *line, Alarm *out_alarm) {
         return false;
 
     uint8_t parsed_id;
-    if (sscanf(type_str, "%hhd", &parsed_id) != 1)
+    if (sscanf(type_str, "%hhu", &parsed_id) != 1)
         return false;
 
     AlarmTypeId id;

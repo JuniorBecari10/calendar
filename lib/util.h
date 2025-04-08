@@ -14,7 +14,7 @@
 #define MAX_DESCRIPTION_LENGTH 1024
 
 // should not be used alone, because it doesn't have the path included.
-#define FILE_NAME ".calendar"
+#define FILE_NAME ".when"
 
 #define ERROR(message)                           \
     do {                                         \

@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
         parse_import(argc, argv);
     
     else if (strcasecmp(option, "export") == 0 && argc == 3)
-        export_calendar(argv[2]);
+        export_alarms(argv[2]);
 
     else if (strcasecmp(option, "alarm") == 0 && argc > 2) {
         char *suboption = argv[2];
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
 }
 
 static int scan_month_day(char *input, uint8_t *output, bool clamp) {
-    if (sscanf(input, "%hhd", output) != 1)
+    if (sscanf(input, "%hhu", output) != 1)
         ERROR("Invalid day of the month.");
 
     if (*output < 1 || *output > 31)
@@ -138,7 +138,7 @@ static int scan_specific_month_day(char *input, uint8_t *output, uint8_t month, 
         31, 31, 30, 31, 30, 31,
     };
     
-    if (sscanf(input, "%hhd", output) != 1)
+    if (sscanf(input, "%hhu", output) != 1)
         ERROR("Invalid day of the month.");
 
     if (*output < 1 || *output > 31)
@@ -172,7 +172,7 @@ static int scan_exact_month_day(char *input, uint8_t *output, uint8_t month, int
     if (is_leap_year(year))
         days_in_month[1] = 29;
     
-    if (sscanf(input, "%hhd", output) != 1)
+    if (sscanf(input, "%hhu", output) != 1)
         ERROR("Invalid day of the month.");
 
     if (*output > days_in_month[month])
@@ -182,7 +182,7 @@ static int scan_exact_month_day(char *input, uint8_t *output, uint8_t month, int
 }
 
 static int scan_month(char *input, uint8_t *output) {
-    if (sscanf(input, "%hhd", output) != 1)
+    if (sscanf(input, "%hhu", output) != 1)
         ERROR("Invalid month.");
 
     if (*output < 1 || *output > 12)
@@ -203,7 +203,7 @@ static int scan_year(char *input, int32_t *output) {
 
 static int scan_hour(char *input, Hour *output) {
     uint8_t hours, minutes;
-    if (sscanf(input, "%hhd:%hhd", &hours, &minutes) != 2)
+    if (sscanf(input, "%hhu:%hhu", &hours, &minutes) != 2)
         ERROR("Please specify the hour correctly: 'hh:mm'.");
 
     *output = (Hour) {
@@ -218,7 +218,7 @@ static int scan_hour(char *input, Hour *output) {
 }
 
 static int scan_week_day(char *input, uint8_t *output) {
-    if (sscanf(input, "%hhd", output) != 1)
+    if (sscanf(input, "%hhu", output) != 1)
         ERROR("Invalid day of the week.");
 
     if (*output < 1 || *output > 7)
@@ -228,7 +228,7 @@ static int scan_week_day(char *input, uint8_t *output) {
 }
 
 static int scan_id(char* input, Id *output) {
-    if (sscanf(input, "%hd", output) != 1)
+    if (sscanf(input, "%hu", output) != 1)
         ERROR("Invalid ID.");
 
     return 0;
@@ -444,7 +444,7 @@ static int parse_import(int len, char *args[]) {
     char *filename = args[2];
     bool yes = len > 3 && strcasecmp(args[3], "-y") == 0;
     
-    import_calendar(filename, yes);
+    import_alarms(filename, yes);
     return 0;
 }
 

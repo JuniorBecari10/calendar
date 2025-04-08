@@ -82,19 +82,19 @@ typedef struct {
 } Alarm;
 
 /* 
- * Args:
+ * args:
  *
- * 0 -> show current month ok
- * 1 (year) -> show entire year ok
- * 2 (month year) -> show specified month ok
+ * 0 -> show current month
+ * 1 (year) -> show entire year
+ * 2 (month year) -> show specified month
  *
- * now -> show current date and time ok
- * help -> show help text ok*
- * version -> show version and details ok
- * watch -> watch mode, where the app can work and ring your alarms ok*
+ * now -> show current date and time
+ * help -> show help text
+ * version -> show version and details
+ * watch -> watch mode, where the app can work and ring your alarms
  *
- * import <file> [-y] -> set the global '.calendar' file to the specified one if it's valid, '-y' flag to not ask for confirmation ok*
- * export <file> -> export the current '.calendar' file to the specified file ok*
+ * import <file> [-y] -> set the global '.when' file to the specified one if it's valid, '-y' flag to not ask for confirmation
+ * export <file> -> export the current '.when' file to the specified file
  * 
  * alarm:
  *     add <description> (daily <hh:mm> | weekly <week-day> <hh:mm>
@@ -117,8 +117,8 @@ void help();
 void version();
 void watch();
 
-void import_calendar(char *file, bool yes);
-void export_calendar(char *file);
+void import_alarms(char *file, bool yes);
+void export_alarms(char *file);
 
 void alarm_add(Alarm alarm, bool yes);
 void alarm_edit(Id id, Alarm alarm);

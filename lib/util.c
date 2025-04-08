@@ -39,13 +39,12 @@ size_t get_index_str(char *arr[], size_t size, char *value) {
 }
 
 char *get_file_path() {
-    struct passwd *pw = getpwuid(getuid());
-    if (pw == NULL) {
-        perror("getpwuid");
-        return NULL;
-    }
+    const char *home = getenv("HOME"); // For Unix
     
-    size_t path_length = strlen(pw->pw_dir) + strlen(FILE_NAME) + 2; // 1 for '/' and 1 for null terminator
+    if (!home)
+        home = getenv("USERPROFILE"); // Windows fallback
+    
+    size_t path_length = strlen(home) + strlen(FILE_NAME) + 2; // 1 for '/' and 1 for null terminator
     char *file_path = (char *) malloc(path_length);
     
     if (file_path == NULL) {
@@ -53,7 +52,7 @@ char *get_file_path() {
         return NULL;
     }
 
-    snprintf(file_path, path_length, "%s/%s", pw->pw_dir, FILE_NAME);
+    snprintf(file_path, path_length, "%s/%s", home, FILE_NAME);
     return file_path;
 }
 
