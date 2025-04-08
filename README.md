@@ -254,6 +254,6 @@ After compiling, run the program by typing `./when`.
 
 ## License
 
-This project is licensed under the GPL 3-Clause License. <br />
+This project is licensed under the BSD 3-Clause License. <br />
 It is defined in `LICENSE`.
 
