@@ -7,10 +7,10 @@ It works offline, and has no dependencies.
 
 When was designed to be simple and operated entirely by the terminal.
 
-- It was written in plain C (with the C11 standard);
+- It is written in plain C (in the C11 standard);
 - Runs fully offline, and all the data the app uses stays in your computer;
 - The project has no external dependencies;
-- Alarms use the 24-hour format.
+- Alarms use the 24-hour format, and dates use the ISO 8601 format.
 
 The current version is `v1.0 Beta`.
 
@@ -63,13 +63,19 @@ Commands:
 - The `monthly` and `yearly` frequencies have an optional extra `--clamp` flag. It is used to clamp the alarm to the last day of the month, if the current month doesn't have enough days to ring the alarm properly;
 - The `yearly` frequency has the `--clamp` flag because of February 29, which only occurs on leap years; in other years the alarm will ring on February 28 instead;
 - Some operations, like `remove`, `clear` and `add` have an extra confirmation step, because they are destructive (`add` is not; it is explained better below). You can add an extra flag `-y` to bypass this confirmation step;
-- The `add` operation has this confirmation step only when you try to add a duplicate alarm; it reminds the user that there is already another alarm with the same frequency and hour than the one you are trying to add. If confirmed, it will add it, and you will have two alarms ringing in the same time.
-- All alarms have a unique ID, which is a four-digit number. It is used to refer to an specific alarm when you edit or remove it.
+- The `add` operation has this confirmation step only when you try to add a duplicate alarm; it reminds the user that there is already another alarm with the same frequency and hour than the one you are trying to add. If confirmed, it will add it, and you will have two identical alarms (the ID will be different, and the description may or may not be different also) ringing at the same time.
+- All alarms have a unique ID, which is a four-digit number. It is used to refer to an specific alarm when you edit it or remove it. Because of this, the limit of alarms you can have is `9999`.
 
 ## Watch mode
 
 The Watch mode is the core of When. It is strictly necessary for the alarms to ring. <br />
 Basically, it is a persistent background process that monitors time and rings alarms.
+
+You enter the Watch mode by running `when watch`. <br />
+It must be manually run by typing this command, otherwise your alarms won't ring.
+
+It is recommended to keep open a separate running terminal window to keep the Watch mode on. <br />
+When an alarm rings, it will emit a beep sound. More on that below.
 
 This is an example of the Watch mode screen:
 ```
@@ -98,10 +104,15 @@ Go to sleep | id: 2949 | Daily - 22:00
 Have lunch | id: 2428 | Daily - 11:30
 ```
 
+If more than one alarm is ringing now, all of them will appear below `Ringing now:`.
+
 ### How it works
 
 Watch mode consistently monitors time and check if the current time matches with some of your alarms.
 It also emits a sound signal, if your terminal supports it, via a special escape sequence: the beep (`\a`).
+
+Independently of the number of alarms ringing now, they will ring once a second, <br />
+since the screen is updated once a second.
 
 ## Examples
 
@@ -207,10 +218,10 @@ Alarm added successfully.
 
 - **Adding a new yearly alarm**
 ```
-$ when alarm add "My birthday" yearly 12 4 09:00
+$ when alarm add "My birthday" yearly 4 12 09:00
 ```
 ```
-My birthday | id: 7911 | Yearly - April 12 (01-08) - 09:00
+My birthday | id: 7911 | Yearly - April 12 (04-12) - 09:00
 Alarm added successfully.
 ```
 
